@@ -1,0 +1,59 @@
+{
+    "name": "lenius/laravel-ecommerce",
+    "description": "Shopping basket package for laravel 8.x",
+    "homepage": "https://github.com/Lenius/laravel-ecommerce",
+    "keywords": ["laravel", "framework", "Laravel-Basket", "Laravel Basket", "e-commerce", "lenius"],
+    "license": "MIT",
+    "authors": [
+        {
+            "name": "Carsten Jonstrup",
+            "email": "carsten@lenius.dk"
+        }
+    ],
+    "require": {
+        "php" : "^7.4 || ^8.0",
+        "lenius/basket": "^4.0",
+        "illuminate/auth": "^8.0",
+        "illuminate/container": "^8.0",
+        "illuminate/contracts": "^8.0",
+        "illuminate/database": "^8.0"
+    },
+    "require-dev": {
+        "orchestra/testbench": "^6.0",
+        "phpunit/phpunit": "^9.0",
+        "vimeo/psalm": "^4.00",
+        "psalm/plugin-laravel": "^1.2",
+        "friendsofphp/php-cs-fixer": "^2.16"
+    },
+    "config": {
+        "sort-packages": true
+    },
+    "autoload": {
+        "psr-4": {
+            "Lenius\\LaravelEcommerce\\": "src"
+        }
+    },
+    "autoload-dev": {
+        "psr-4": {
+            "Lenius\\LaravelEcommerce\\Test\\": "tests"
+        }
+    },
+    "extra": {
+        "laravel": {
+            "providers": [
+                "Lenius\\LaravelEcommerce\\EcommerceServiceProvider"
+            ],
+            "aliases": {
+                "Basket": "Lenius\\LaravelEcommerce\\Facades\\Basket"
+            }
+        }
+    },
+    "scripts": {
+        "psalm": "vendor/bin/psalm",
+        "test": "vendor/bin/phpunit",
+        "test-coverage": "vendor/bin/phpunit --coverage-html coverage",
+        "format": "vendor/bin/php-cs-fixer fix --allow-risky=yes"
+    },
+    "minimum-stability": "dev",
+    "prefer-stable": true
+}
