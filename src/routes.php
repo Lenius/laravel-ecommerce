@@ -1,10 +1,8 @@
 <?php
 
 use Illuminate\Support\Facades\Route;
+use Lenius\LaravelEcommerce\Controllers\EcommerceController;
 
 Route::group(['middleware' => ['web']], function () {
-    Route::get(
-        config('magiclink.url.validate_path', 'magiclink').'/{token}',
-        'MagicLink\Controllers\MagicLinkController@access'
-    );
+    EcommerceController::routes();
 });
