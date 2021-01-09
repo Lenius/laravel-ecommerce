@@ -1,9 +1,10 @@
 
 # Ecommerce for Laravels App
 
-[![Build Status](https://travis-ci.org/Lenius/laravel-ecommerce.svg)](https://travis-ci.org/Lenius/laravel-ecommerce)
-![tests](https://github.com/Lenius/laravel-ecommerce/workflows/tests/badge.svg?branch=main)
-[![License](https://poser.pugx.org/Lenius/laravel-ecommerce/license.svg)](https://packagist.org/packages/Lenius/laravel-ecommerce)
+[![Latest Version on Packagist](https://img.shields.io/packagist/v/https://packagist.org/packages/lenius/laravel-ecommerce.svg?style=flat-square)](https://packagist.org/packages/https://packagist.org/packages/lenius/laravel-ecommerce)
+[![Build Status](https://travis-ci.org/lenius/laravel-ecommerce.svg)](https://travis-ci.org/lenius/laravel-ecommerce)
+![tests](https://github.com/lenius/laravel-ecommerce/workflows/tests/badge.svg?branch=main)
+[![License](https://poser.pugx.org/lenius/laravel-ecommerce/license.svg)](https://packagist.org/packages/Lenius/laravel-ecommerce)
 
 ## Installation
 
