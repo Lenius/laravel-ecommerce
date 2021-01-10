@@ -4,6 +4,8 @@ matrix:
   include:
     - php: '7.4'
       env: LARAVEL='^8.0' ORCHESTRA="6.*.*" COMPOSER_FLAGS='--prefer-stable'
+    - php: '8.0'
+      env: LARAVEL='^8.0' ORCHESTRA="6.*.*" COMPOSER_FLAGS='--prefer-stable'
 
 before_script:
   - travis_retry composer self-update
