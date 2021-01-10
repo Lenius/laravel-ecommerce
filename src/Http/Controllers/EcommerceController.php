@@ -1,7 +1,9 @@
 <?php
 
-namespace Lenius\LaravelEcommerce\Controllers;
+namespace Lenius\LaravelEcommerce\Http\Controllers;
 
+use Illuminate\Contracts\View\View;
+use Illuminate\Http\RedirectResponse;
 use Lenius\Basket\Item;
 use Lenius\Basket\ItemInterface;
 use Lenius\LaravelEcommerce\Facades\Basket;
@@ -16,15 +18,15 @@ class EcommerceController extends Controller
         $router->get('basket/debug', [EcommerceController::class, 'debug'])->name('basket.debug');
         $router->get('basket/destroy', [EcommerceController::class, 'destroy'])->name('basket.destroy');
         $router->any('basket/{id}/add', [EcommerceController::class, 'add'])->name('basket.add');
-        $router->get('basket/{id}/dec', [EcommerceController::class, 'dec'])->name('basket.dec');
-        $router->get('basket/{id}/inc', [EcommerceController::class, 'inc'])->name('basket.inc');
-        $router->get('basket/{id}/remove', [EcommerceController::class, 'remove'])->name('basket.remove');
+        $router->get('basket/{id}/dec', [EcommerceController::class, 'dec'])->name('basket.item.dec');
+        $router->get('basket/{id}/inc', [EcommerceController::class, 'inc'])->name('basket.item.inc');
+        $router->get('basket/{id}/remove', [EcommerceController::class, 'remove'])->name('basket.item.remove');
         $router->get('basket/demo', [EcommerceController::class, 'demo'])->name('basket.demo');
     }
 
-    public function index(): array
+    public function index(): View
     {
-        return Basket::contents();
+        return view('ecommerce::basket');
     }
 
     public function debug(): array
@@ -39,14 +41,14 @@ class EcommerceController extends Controller
         ];
     }
 
-    public function destroy(): array
+    public function destroy(): RedirectResponse
     {
         Basket::destroy();
 
-        return Basket::contents();
+        return redirect()->route('basket');
     }
 
-    public function inc(string $itemIdentifier): array
+    public function inc(string $itemIdentifier): RedirectResponse
     {
         /** @var ItemInterface $item */
         if ($item = Basket::item($itemIdentifier)) {
@@ -57,10 +59,10 @@ class EcommerceController extends Controller
             }
         }
 
-        return Basket::contents();
+        return redirect()->route('basket');
     }
 
-    public function dec(string $itemIdentifier): array
+    public function dec(string $itemIdentifier): RedirectResponse
     {
         /** @var ItemInterface $item */
         if ($item = Basket::item($itemIdentifier)) {
@@ -71,19 +73,19 @@ class EcommerceController extends Controller
             }
         }
 
-        return Basket::contents();
+        return redirect()->route('basket');
     }
 
-    public function remove(string $itemIdentifier): array
+    public function remove(string $itemIdentifier): RedirectResponse
     {
         if (Basket::item($itemIdentifier)) {
             Basket::remove($itemIdentifier);
         }
 
-        return Basket::contents();
+        return redirect()->route('basket');
     }
 
-    public function demo(): array
+    public function demo(): RedirectResponse
     {
         $item = [
             'id'            => 1,
@@ -101,6 +103,6 @@ class EcommerceController extends Controller
 
         Basket::insert(new Item($item));
 
-        return Basket::contents();
+        return redirect()->route('basket');
     }
 }

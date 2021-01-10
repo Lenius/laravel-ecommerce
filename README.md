@@ -19,6 +19,8 @@ You can then export the configuration:
 
 ```bash
 php artisan vendor:publish --provider="Lenius\LaravelEcommerce\EcommerceServiceProvider" --tag="config"
+php artisan vendor:publish --provider="Lenius\LaravelEcommerce\EcommerceServiceProvider" --tag="lang"
+php artisan vendor:publish --provider="Lenius\LaravelEcommerce\EcommerceServiceProvider" --tag="views"
 ```
 
 You can then create the tables by running the migrations:
@@ -32,9 +34,10 @@ php artisan migrate
 Run the tests with:
 
 ``` bash
+composer psalm
+composer stan
 composer test
 composer test-coverage
-composer psalm
 ```
 
 ## Contributing

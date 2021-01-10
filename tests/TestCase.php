@@ -5,6 +5,7 @@ namespace Lenius\LaravelEcommerce\Test;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Foundation\Application;
 use Lenius\LaravelEcommerce\EcommerceServiceProvider;
+use Lenius\LaravelEcommerce\Facades\Basket;
 use Orchestra\Testbench\TestCase as Orchestra;
 
 abstract class TestCase extends Orchestra
@@ -29,6 +30,17 @@ abstract class TestCase extends Orchestra
     }
 
     /**
+     * @param Application $app
+     * @return array
+     */
+    protected function getPackageAliases($app)
+    {
+        return [
+            'Basket' => Basket::class,
+        ];
+    }
+
+    /**
      * Set up the environment.
      *
      * @param Application $app
@@ -39,7 +51,7 @@ abstract class TestCase extends Orchestra
 
         $app['config']->set('auth.providers.users.model', 'Lenius\LaravelEcommerce\Test\User');
 
-        $app['config']->set('view.paths', [__DIR__.'/stubs/resources/views']);
+  //      $app['config']->set('view.paths', [__DIR__.'/stubs/resources/views']);
 
 //        $app['config']->set('filesystems.disks.local.root', __DIR__.'/stubs/storage/app');
 //

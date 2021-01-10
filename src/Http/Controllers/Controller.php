@@ -1,6 +1,6 @@
 <?php
 
-namespace Lenius\LaravelEcommerce\Controllers;
+namespace Lenius\LaravelEcommerce\Http\Controllers;
 
 use Illuminate\Foundation\Auth\Access\AuthorizesRequests;
 use Illuminate\Foundation\Bus\DispatchesJobs;

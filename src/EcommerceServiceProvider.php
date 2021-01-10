@@ -17,11 +17,24 @@ class EcommerceServiceProvider extends ServiceProvider
      */
     public function boot()
     {
-        $this->publishes([
-            __DIR__.'/../config/ecommerce.php' => config_path('ecommerce.php'),
-        ], 'config');
+        if ($this->app->runningInConsole()) {
+
+            $this->publishes([
+                __DIR__.'/../config/ecommerce.php' => config_path('ecommerce.php'),
+            ], 'config');
+
+            $this->publishes([
+                __DIR__.'/../resources/views' => resource_path('views/vendor/ecommerce'),
+            ], 'views');
+
+            $this->publishes([
+                __DIR__.'/../resources/lang' => resource_path('lang/vendor/ecommerce'),
+            ], 'lang');
+        };
 
         $this->loadMigrationsFrom(__DIR__.'/../databases/migrations');
+        $this->loadTranslationsFrom(__DIR__.'/../resources/lang', 'ecommerce');
+        $this->loadViewsFrom(__DIR__.'/../resources/views', 'ecommerce');
 
         if ($this->mustLoadRoute()) {
             Route::group($this->routeConfiguration(), function () {
