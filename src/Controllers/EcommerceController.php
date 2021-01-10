@@ -34,7 +34,7 @@ class EcommerceController extends Controller
             'sum'         => Basket::total(false),
             'tax'         => Basket::tax(),
             'total'       => Basket::total(),
-            'total_items' => Basket::total_items(),
+            'total_items' => Basket::totalItems(),
         ]);
     }
 
