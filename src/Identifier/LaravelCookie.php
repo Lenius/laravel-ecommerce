@@ -17,7 +17,11 @@ class LaravelCookie implements IdentifierInterface
     public function get(): string
     {
         if (request()->hasCookie('cart_identifier')) {
-            return request()->cookie('cart_identifier');
+            $cookie = request()->cookie('cart_identifier');
+
+            if (is_string($cookie) && ! empty($cookie)) {
+                return $cookie;
+            }
         }
 
         return $this->regenerate();

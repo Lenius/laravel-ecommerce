@@ -13,6 +13,9 @@
     </projectFiles>
 
     <issueHandlers>
+        <LessSpecificImplementedReturnType errorLevel="suppress"/>
+        <NoInterfaceProperties errorLevel="suppress"/>
+        <PossiblyInvalidMethodCall errorLevel="suppress"/>
     </issueHandlers>
 
     <plugins>

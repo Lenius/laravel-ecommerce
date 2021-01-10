@@ -8,7 +8,7 @@ use Lenius\LaravelEcommerce\Facades\Basket;
 
 class EcommerceController extends Controller
 {
-    public static function routes()
+    public static function routes(): void
     {
         $router = app()->make('router');
 
@@ -22,7 +22,7 @@ class EcommerceController extends Controller
         $router->get('basket/demo', [EcommerceController::class, 'demo'])->name('basket.demo');
     }
 
-    public function index()
+    public function index(): array
     {
         return Basket::contents();
     }

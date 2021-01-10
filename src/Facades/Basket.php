@@ -10,7 +10,7 @@ use Lenius\Basket\Item;
  *
  * @method static array contents()
  * @method static int totalItems()
- * @method static float total()
+ * @method static float total($includeTax = true)
  * @method static float tax()
  * @method static item(string $itemIdentifier)
  * @method static remove(string $itemIdentifier)

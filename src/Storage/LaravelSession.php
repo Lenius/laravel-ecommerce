@@ -9,9 +9,6 @@ use Lenius\Basket\StorageInterface;
 
 class LaravelSession extends Runtime implements StorageInterface
 {
-    protected string $identifier;
-    protected static array $cart = [];
-
     public function restore(): void
     {
         $carts = Session::get('cart');
