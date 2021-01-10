@@ -24,9 +24,9 @@
                             @endforeach
                         @endif
                     </td>
-                    <td><a href="{{route('ecommerce.basket.item.inc',[$index])}}">-</a></td>
+                    <td><a href="{{route('ecommerce.basket.item.inc',[$index])}}">+</a></td>
                     <td><input class="form-control" type="text" name="quantity[{{$index}}]" value="{{$item->quantity}}" style="width:90px"/></td>
-                    <td><a href="{{route('ecommerce.basket.item.dec',[$index])}}">+</a></td>
+                    <td><a href="{{route('ecommerce.basket.item.dec',[$index])}}">-</a></td>
                     <td>{{$item->single(false)}}</td>
                     <td>{{$item->tax}}</td>
                     <td>{{$item->total(false)}}</td>
