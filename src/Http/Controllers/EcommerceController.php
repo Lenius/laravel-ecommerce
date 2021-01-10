@@ -53,14 +53,14 @@ class EcommerceController extends Controller
 
     public function update(Request $request): RedirectResponse
     {
-        $basket = $request->input('basket');
+        $items = $request->input('quantity');
 
-        if ($basket['items']) {
+        if ($items) {
             /* @var ItemInterface $item */
-            foreach ($basket['items'] as $itemIdentifier => $post_item) {
+            foreach ($items as $itemIdentifier => $quantity) {
                 if ($item = Basket::item($itemIdentifier)) {
-                    if ($post_item['quantity'] > 0) {
-                        $item->quantity = (int) $post_item['quantity'];
+                    if ($quantity > 0) {
+                        $item->quantity = (int) $quantity;
                     } else {
                         Basket::remove($itemIdentifier);
                     }
