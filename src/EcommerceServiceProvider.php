@@ -2,6 +2,7 @@
 
 namespace Lenius\LaravelEcommerce;
 
+use Illuminate\Support\Facades\Route;
 use Illuminate\Support\ServiceProvider;
 use Lenius\Basket\Basket;
 use Lenius\LaravelEcommerce\Identifier\LaravelCookie;
@@ -23,13 +24,23 @@ class EcommerceServiceProvider extends ServiceProvider
         $this->loadMigrationsFrom(__DIR__.'/../databases/migrations');
 
         if ($this->mustLoadRoute()) {
-            $this->loadRoutesFrom(__DIR__.'/routes.php');
+            Route::group($this->routeConfiguration(), function () {
+                $this->loadRoutesFrom(__DIR__.'/routes.php');
+            });
         }
     }
 
     protected function mustLoadRoute()
     {
         return ! config('ecommerce.disable_default_route', false);
+    }
+
+    protected function routeConfiguration()
+    {
+        return [
+            'prefix'     => config('ecommerce.prefix', 'ecommerce'),
+            'middleware' => config('ecommerce.middleware', 'web'),
+        ];
     }
 
     /**

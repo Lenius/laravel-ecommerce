@@ -2,7 +2,6 @@
 
 namespace Lenius\LaravelEcommerce\Controllers;
 
-use Illuminate\Routing\Controller;
 use Lenius\Basket\ItemInterface;
 use Lenius\LaravelEcommerce\Facades\Basket;
 
