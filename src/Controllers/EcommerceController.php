@@ -30,11 +30,12 @@ class EcommerceController extends Controller
     public function debug(): array
     {
         return [
-            'items'       => Basket::contents(),
-            'sum'         => Basket::total(false),
-            'tax'         => Basket::tax(),
-            'total'       => Basket::total(),
-            'total_items' => Basket::totalItems(),
+            'items'        => Basket::contents(),
+            'sum'          => Basket::total(false),
+            'tax'          => Basket::tax(),
+            'total'        => Basket::total(),
+            'weight'       => Basket::weight(),
+            'total_items'  => Basket::totalItems(),
         ];
     }
 
