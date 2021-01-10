@@ -4,6 +4,7 @@ namespace Lenius\LaravelEcommerce\Http\Controllers;
 
 use Illuminate\Contracts\View\View;
 use Illuminate\Http\RedirectResponse;
+use Illuminate\Http\Request;
 use Lenius\Basket\Item;
 use Lenius\Basket\ItemInterface;
 use Lenius\LaravelEcommerce\Facades\Basket;
@@ -16,12 +17,14 @@ class EcommerceController extends Controller
 
         $router->get('basket', [EcommerceController::class, 'index'])->name('ecommerce.basket');
         $router->get('basket/debug', [EcommerceController::class, 'debug'])->name('ecommerce.basket.debug');
+        $router->get('basket/demo', [EcommerceController::class, 'demo'])->name('ecommerce.basket.demo');
         $router->get('basket/destroy', [EcommerceController::class, 'destroy'])->name('ecommerce.basket.destroy');
+        $router->post('basket/update', [EcommerceController::class, 'update'])->name('ecommerce.basket.update');
+
         $router->any('basket/{id}/add', [EcommerceController::class, 'add'])->name('ecommerce.basket.add');
         $router->get('basket/{id}/dec', [EcommerceController::class, 'dec'])->name('ecommerce.basket.item.dec');
         $router->get('basket/{id}/inc', [EcommerceController::class, 'inc'])->name('ecommerce.basket.item.inc');
         $router->get('basket/{id}/remove', [EcommerceController::class, 'remove'])->name('ecommerce.basket.item.remove');
-        $router->get('basket/demo', [EcommerceController::class, 'demo'])->name('ecommerce.basket.demo');
     }
 
     public function index(): View
@@ -44,6 +47,26 @@ class EcommerceController extends Controller
     public function destroy(): RedirectResponse
     {
         Basket::destroy();
+
+        return redirect()->route('ecommerce.basket');
+    }
+
+    public function update(Request $request): RedirectResponse
+    {
+        $basket = $request->input('basket');
+
+        if ($basket['items']) {
+            /* @var ItemInterface $item */
+            foreach ($basket['items'] as $itemIdentifier => $post_item) {
+                if ($item = Basket::item($itemIdentifier)) {
+                    if ($post_item['quantity'] > 0) {
+                        $item->quantity = (int) $post_item['quantity'];
+                    } else {
+                        Basket::remove($itemIdentifier);
+                    }
+                }
+            }
+        }
 
         return redirect()->route('ecommerce.basket');
     }

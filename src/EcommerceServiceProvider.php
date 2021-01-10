@@ -18,7 +18,6 @@ class EcommerceServiceProvider extends ServiceProvider
     public function boot()
     {
         if ($this->app->runningInConsole()) {
-
             $this->publishes([
                 __DIR__.'/../config/ecommerce.php' => config_path('ecommerce.php'),
             ], 'config');

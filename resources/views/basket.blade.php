@@ -1,5 +1,5 @@
 @if(Basket::contents())
-    <form action="{{route('ecommerce.basket')}}" method="POST">
+    <form action="{{route('ecommerce.basket.update')}}" method="POST">
         <input type="hidden" name="_token" value="{{ csrf_token() }}">
         <table class="table table-bordered">
             <thead>

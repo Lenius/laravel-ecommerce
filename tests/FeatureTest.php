@@ -21,7 +21,7 @@ class FeatureTest extends TestCase
             ->assertStatus(302)
             ->assertRedirect(route('ecommerce.basket'));
 
-        $this->get('/ecommerce/basket')
+        $this->get(route('ecommerce.basket'))
             ->assertStatus(200)
             ->assertSeeText('My product');
 
