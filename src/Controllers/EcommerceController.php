@@ -2,6 +2,7 @@
 
 namespace Lenius\LaravelEcommerce\Controllers;
 
+use Lenius\Basket\Item;
 use Lenius\Basket\ItemInterface;
 use Lenius\LaravelEcommerce\Facades\Basket;
 
@@ -18,6 +19,7 @@ class EcommerceController extends Controller
         $router->get('basket/{id}/dec', [EcommerceController::class, 'dec'])->name('basket.dec');
         $router->get('basket/{id}/inc', [EcommerceController::class, 'inc'])->name('basket.inc');
         $router->get('basket/{id}/remove', [EcommerceController::class, 'remove'])->name('basket.remove');
+        $router->get('basket/demo', [EcommerceController::class, 'demo'])->name('basket.demo');
     }
 
     public function index()
@@ -72,5 +74,24 @@ class EcommerceController extends Controller
         }
 
         return Basket::contents();
+    }
+
+    public function demo()
+    {
+        $item = [
+            'id'            => 1,
+            'number'        => 'zxy',
+            'name'          => 'My product',
+            'stock'         => 'In stock',
+            'unit'          => 'M',
+            'tax'           => 25,
+            'price'         => 100,
+            'weight'        => 100,
+            'quantity'      => 1,
+            'type'          => 'item',
+            'link'          => '',
+        ];
+
+        Basket::insert(new Item($item));
     }
 }
