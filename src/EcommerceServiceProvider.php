@@ -30,12 +30,12 @@ class EcommerceServiceProvider extends ServiceProvider
         }
     }
 
-    protected function mustLoadRoute()
+    protected function mustLoadRoute(): bool
     {
         return ! config('ecommerce.disable_default_route', false);
     }
 
-    protected function routeConfiguration()
+    protected function routeConfiguration(): array
     {
         return [
             'prefix'     => config('ecommerce.prefix', 'ecommerce'),

@@ -27,7 +27,7 @@ class EcommerceController extends Controller
         return Basket::contents();
     }
 
-    public function debug()
+    public function debug(): array
     {
         return [
             'items'       => Basket::contents(),
@@ -38,14 +38,14 @@ class EcommerceController extends Controller
         ];
     }
 
-    public function destroy()
+    public function destroy(): array
     {
         Basket::destroy();
 
         return Basket::contents();
     }
 
-    public function inc($itemIdentifier)
+    public function inc(string $itemIdentifier): array
     {
         /** @var ItemInterface $item */
         if ($item = Basket::item($itemIdentifier)) {
@@ -59,7 +59,7 @@ class EcommerceController extends Controller
         return Basket::contents();
     }
 
-    public function dec($itemIdentifier)
+    public function dec(string $itemIdentifier): array
     {
         /** @var ItemInterface $item */
         if ($item = Basket::item($itemIdentifier)) {
@@ -73,16 +73,16 @@ class EcommerceController extends Controller
         return Basket::contents();
     }
 
-    public function remove($itemIdentifier)
+    public function remove(string $itemIdentifier): array
     {
-        if ($item = Basket::item($itemIdentifier)) {
+        if (Basket::item($itemIdentifier)) {
             Basket::remove($itemIdentifier);
         }
 
         return Basket::contents();
     }
 
-    public function demo()
+    public function demo(): array
     {
         $item = [
             'id'            => 1,
