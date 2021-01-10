@@ -14,14 +14,14 @@ class EcommerceController extends Controller
     {
         $router = app()->make('router');
 
-        $router->get('basket', [EcommerceController::class, 'index'])->name('basket');
-        $router->get('basket/debug', [EcommerceController::class, 'debug'])->name('basket.debug');
-        $router->get('basket/destroy', [EcommerceController::class, 'destroy'])->name('basket.destroy');
-        $router->any('basket/{id}/add', [EcommerceController::class, 'add'])->name('basket.add');
-        $router->get('basket/{id}/dec', [EcommerceController::class, 'dec'])->name('basket.item.dec');
-        $router->get('basket/{id}/inc', [EcommerceController::class, 'inc'])->name('basket.item.inc');
-        $router->get('basket/{id}/remove', [EcommerceController::class, 'remove'])->name('basket.item.remove');
-        $router->get('basket/demo', [EcommerceController::class, 'demo'])->name('basket.demo');
+        $router->get('basket', [EcommerceController::class, 'index'])->name('ecommerce.basket');
+        $router->get('basket/debug', [EcommerceController::class, 'debug'])->name('ecommerce.basket.debug');
+        $router->get('basket/destroy', [EcommerceController::class, 'destroy'])->name('ecommerce.basket.destroy');
+        $router->any('basket/{id}/add', [EcommerceController::class, 'add'])->name('ecommerce.basket.add');
+        $router->get('basket/{id}/dec', [EcommerceController::class, 'dec'])->name('ecommerce.basket.item.dec');
+        $router->get('basket/{id}/inc', [EcommerceController::class, 'inc'])->name('ecommerce.basket.item.inc');
+        $router->get('basket/{id}/remove', [EcommerceController::class, 'remove'])->name('ecommerce.basket.item.remove');
+        $router->get('basket/demo', [EcommerceController::class, 'demo'])->name('ecommerce.basket.demo');
     }
 
     public function index(): View
@@ -45,7 +45,7 @@ class EcommerceController extends Controller
     {
         Basket::destroy();
 
-        return redirect()->route('basket');
+        return redirect()->route('ecommerce.basket');
     }
 
     public function inc(string $itemIdentifier): RedirectResponse
@@ -59,7 +59,7 @@ class EcommerceController extends Controller
             }
         }
 
-        return redirect()->route('basket');
+        return redirect()->route('ecommerce.basket');
     }
 
     public function dec(string $itemIdentifier): RedirectResponse
@@ -73,7 +73,7 @@ class EcommerceController extends Controller
             }
         }
 
-        return redirect()->route('basket');
+        return redirect()->route('ecommerce.basket');
     }
 
     public function remove(string $itemIdentifier): RedirectResponse
@@ -82,7 +82,7 @@ class EcommerceController extends Controller
             Basket::remove($itemIdentifier);
         }
 
-        return redirect()->route('basket');
+        return redirect()->route('ecommerce.basket');
     }
 
     public function demo(): RedirectResponse
@@ -103,6 +103,6 @@ class EcommerceController extends Controller
 
         Basket::insert(new Item($item));
 
-        return redirect()->route('basket');
+        return redirect()->route('ecommerce.basket');
     }
 }
