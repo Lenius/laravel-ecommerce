@@ -29,13 +29,13 @@ class EcommerceController extends Controller
 
     public function debug()
     {
-        dd([
+        return [
             'items'       => Basket::contents(),
             'sum'         => Basket::total(false),
             'tax'         => Basket::tax(),
             'total'       => Basket::total(),
             'total_items' => Basket::totalItems(),
-        ]);
+        ];
     }
 
     public function destroy()
