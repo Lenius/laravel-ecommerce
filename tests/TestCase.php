@@ -3,6 +3,7 @@
 namespace Lenius\LaravelEcommerce\Test;
 
 use Illuminate\Database\Schema\Blueprint;
+use Illuminate\Foundation\Application;
 use Lenius\LaravelEcommerce\EcommerceServiceProvider;
 use Orchestra\Testbench\TestCase as Orchestra;
 
@@ -16,7 +17,7 @@ abstract class TestCase extends Orchestra
     }
 
     /**
-     * @param \Illuminate\Foundation\Application $app
+     * @param Application $app
      *
      * @return array
      */
@@ -30,7 +31,7 @@ abstract class TestCase extends Orchestra
     /**
      * Set up the environment.
      *
-     * @param \Illuminate\Foundation\Application $app
+     * @param Application $app
      */
     protected function getEnvironmentSetUp($app)
     {
@@ -40,12 +41,12 @@ abstract class TestCase extends Orchestra
 
         $app['config']->set('view.paths', [__DIR__.'/stubs/resources/views']);
 
-        $app['config']->set('filesystems.disks.local.root', __DIR__.'/stubs/storage/app');
-
-        $app['config']->set('filesystems.disks.alternative', [
-            'driver' => 'local',
-            'root'   => __DIR__.'/stubs/storage/app_alternative',
-        ]);
+//        $app['config']->set('filesystems.disks.local.root', __DIR__.'/stubs/storage/app');
+//
+//        $app['config']->set('filesystems.disks.alternative', [
+//            'driver' => 'local',
+//            'root'   => __DIR__.'/stubs/storage/app_alternative',
+//        ]);
 
         $app['config']->set('database.connections.sqlite', [
             'driver'   => 'sqlite',
@@ -84,14 +85,13 @@ abstract class TestCase extends Orchestra
     /**
      * Set up the database.
      *
-     * @param \Illuminate\Foundation\Application $app
+     * @param Application $app
      */
     protected function setUpDatabase($app)
     {
         if ($app['config']->get('database.default') !== 'sqlite') {
             $app['db']->connection()->getSchemaBuilder()->dropIfExists('users');
             $app['db']->connection()->getSchemaBuilder()->dropIfExists('migrations');
-            $app['db']->connection()->getSchemaBuilder()->dropIfExists('magic_links');
         }
 
         $this->artisan('migrate');
