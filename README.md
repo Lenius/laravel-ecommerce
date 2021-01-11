@@ -4,6 +4,7 @@
 [![Latest Version on Packagist](https://img.shields.io/packagist/v/lenius/laravel-ecommerce.svg?style=flat-square)](https://packagist.org/packages/lenius/laravel-ecommerce)
 [![Build Status](https://travis-ci.org/lenius/laravel-ecommerce.svg)](https://travis-ci.org/lenius/laravel-ecommerce)
 ![tests](https://github.com/lenius/laravel-ecommerce/workflows/tests/badge.svg?branch=main)
+[![Code Coverage](https://scrutinizer-ci.com/g/Lenius/laravel-ecommerce/badges/coverage.png?b=main)](https://scrutinizer-ci.com/g/Lenius/laravel-ecommerce/?branch=main)
 [![Total Downloads](https://poser.pugx.org/lenius/laravel-ecommerce/downloads.svg)](https://packagist.org/packages/laravel-ecommerce)
 [![License](https://poser.pugx.org/lenius/laravel-ecommerce/license.svg)](https://packagist.org/packages/Lenius/laravel-ecommerce)
 
