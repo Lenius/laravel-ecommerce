@@ -1,0 +1,13 @@
+build:
+  nodes:
+    analysis:
+      tests:
+        override:
+          - php-scrutinizer-run
+    coverage:
+      tests:
+        override:
+          - command: 'XDEBUG_MODE=coverage vendor/bin/phpunit --coverage-clover build/logs/clover.xml'
+            coverage:
+              file: 'build/logs/clover.xml'
+              format: clover
