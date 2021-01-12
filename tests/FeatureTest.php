@@ -11,19 +11,10 @@ class FeatureTest extends TestCase
         $this->loadRoutes();
     }
 
-    public function test_ecommerce_basket_demo()
+    public function test_ecommerce_basket_add()
     {
-        $this->get(route('ecommerce.basket'))
-            ->assertStatus(200)
-            ->assertSeeText('Basket empty');
-
-        $this->get(route('ecommerce.basket.demo'))
-            ->assertStatus(302)
-            ->assertRedirect(route('ecommerce.basket'));
-
-        $this->get(route('ecommerce.basket'))
-            ->assertStatus(200)
-            ->assertSeeText('My product');
+        $this->get(route('ecommerce.basket.item.add', [1]))
+            ->assertStatus(302);
 
         $this->get(route('ecommerce.basket.debug'))
             ->assertJson([
@@ -31,10 +22,75 @@ class FeatureTest extends TestCase
                 'tax'         => 25,
                 'total'       => 125,
                 'total_items' => 1,
+                'weight'      => 100,
             ]);
+
+    }
+
+    public function test_ecommerce_basket_dec()
+    {
+        $this->get(route('ecommerce.basket.demo'))
+            ->assertStatus(302)
+            ->assertRedirect(route('ecommerce.basket'));
+
+        $basket = app('basket');
+
+        $item = array_key_first($basket->contents());
+        $this->get(route('ecommerce.basket.item.dec', [$item]))
+            ->assertStatus(302)
+            ->assertRedirect(route('ecommerce.basket'));
+
+        $this->get(route('ecommerce.basket.debug'))
+            ->assertJson([
+                'sum'         => 0,
+                'tax'         => 0,
+                'total'       => 0,
+                'total_items' => 0,
+                'weight'      => 0,
+            ]);
+    }
+
+    public function test_ecommerce_basket_inc()
+    {
+        $this->get(route('ecommerce.basket.demo'))
+            ->assertStatus(302)
+            ->assertRedirect(route('ecommerce.basket'));
+
+        $basket = app('basket');
+
+        $item = array_key_first($basket->contents());
+        $this->get(route('ecommerce.basket.item.inc', [$item]))
+            ->assertStatus(302)
+            ->assertRedirect(route('ecommerce.basket'));
+
+        $this->get(route('ecommerce.basket.debug'))
+            ->assertJson([
+                'sum'         => 200,
+                'tax'         => 50,
+                'total'       => 250,
+                'total_items' => 2,
+                'weight'      => 200,
+            ]);
+
+    }
+
+    public function test_ecommerce_basket_destroy()
+    {
+        $this->get(route('ecommerce.basket.demo'))
+            ->assertStatus(302)
+            ->assertRedirect(route('ecommerce.basket'));
 
         $this->get(route('ecommerce.basket.destroy'))
             ->assertStatus(302)
             ->assertRedirect(route('ecommerce.basket'));
+
+        $this->get(route('ecommerce.basket.debug'))
+            ->assertJson([
+                'sum'         => 0,
+                'tax'         => 0,
+                'total'       => 0,
+                'total_items' => 0,
+                'weight'      => 0,
+            ]);
     }
 }

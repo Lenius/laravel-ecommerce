@@ -21,7 +21,7 @@ class EcommerceController extends Controller
         $router->get('basket/destroy', [EcommerceController::class, 'destroy'])->name('ecommerce.basket.destroy');
         $router->post('basket/update', [EcommerceController::class, 'update'])->name('ecommerce.basket.update');
 
-        $router->any('basket/{id}/add', [EcommerceController::class, 'add'])->name('ecommerce.basket.add');
+        $router->any('basket/{id}/add', [EcommerceController::class, 'add'])->name('ecommerce.basket.item.add');
         $router->get('basket/{id}/dec', [EcommerceController::class, 'dec'])->name('ecommerce.basket.item.dec');
         $router->get('basket/{id}/inc', [EcommerceController::class, 'inc'])->name('ecommerce.basket.item.inc');
         $router->get('basket/{id}/remove', [EcommerceController::class, 'remove'])->name('ecommerce.basket.item.remove');
@@ -30,6 +30,27 @@ class EcommerceController extends Controller
     public function index(): View
     {
         return view('ecommerce::basket');
+    }
+
+    public function add(Request $request, $id)
+    {
+        $item = [
+            'id'            => 1,
+            'number'        => 'zxy',
+            'name'          => 'My product',
+            'stock'         => 'In stock',
+            'unit'          => 'M',
+            'tax'           => 25,
+            'price'         => 100,
+            'weight'        => 100,
+            'quantity'      => 1,
+            'type'          => 'item',
+            'link'          => '',
+        ];
+
+        Basket::insert(new Item($item));
+
+        return redirect()->route('ecommerce.basket');
     }
 
     public function debug(): array
