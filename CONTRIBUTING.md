@@ -24,5 +24,8 @@ We accept contributions via Pull Requests on
 ## Running Tests
 
 ``` bash
-$ composer test
+composer psalm
+composer stan
+composer test
+composer test-coverage
 ```
