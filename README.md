@@ -2,8 +2,7 @@
 # Ecommerce for Laravels App
 
 [![Latest Version on Packagist](https://img.shields.io/packagist/v/lenius/laravel-ecommerce.svg?style=flat-square)](https://packagist.org/packages/lenius/laravel-ecommerce)
-[![Build Status](https://travis-ci.org/lenius/laravel-ecommerce.svg)](https://travis-ci.org/lenius/laravel-ecommerce)
-![tests](https://github.com/lenius/laravel-ecommerce/workflows/tests/badge.svg?branch=main)
+[![tests](https://github.com/Lenius/laravel-ecommerce/actions/workflows/tests.yml/badge.svg?branch=main)](https://github.com/Lenius/laravel-ecommerce/actions/workflows/tests.yml)
 [![Code Coverage](https://scrutinizer-ci.com/g/Lenius/laravel-ecommerce/badges/coverage.png?b=main)](https://scrutinizer-ci.com/g/Lenius/laravel-ecommerce/?branch=main)
 [![Total Downloads](https://poser.pugx.org/lenius/laravel-ecommerce/downloads.svg)](https://packagist.org/packages/laravel-ecommerce)
 [![License](https://poser.pugx.org/lenius/laravel-ecommerce/license.svg)](https://packagist.org/packages/Lenius/laravel-ecommerce)
@@ -23,13 +22,6 @@ php artisan vendor:publish --provider="Lenius\LaravelEcommerce\EcommerceServiceP
 php artisan vendor:publish --provider="Lenius\LaravelEcommerce\EcommerceServiceProvider" --tag="lang"
 php artisan vendor:publish --provider="Lenius\LaravelEcommerce\EcommerceServiceProvider" --tag="views"
 ```
-
-You can then create the tables by running the migrations:
-
-```bash
-php artisan migrate
-```
-
 ## Testing
 
 Run the tests with:
