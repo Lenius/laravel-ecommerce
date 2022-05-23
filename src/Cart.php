@@ -74,16 +74,16 @@ class Cart extends Basket
      * Increment an item from the cart.
      *
      * @param string $itemIdentifier Unique item identifier
-     * @return int|bool
+     * @return ItemInterface|bool
      */
-    public function inc(string $itemIdentifier): int|bool
+    public function inc(string $itemIdentifier): ItemInterface|bool
     {
         /** @var ItemInterface $item */
         if ($item = Cart::item($itemIdentifier)) {
             $item->quantity++;
             $this->events->dispatch(new CartItemUpdated($this->item($itemIdentifier)));
 
-            return $item->quantity;
+            return $item;
         }
 
         return false;
@@ -93,15 +93,16 @@ class Cart extends Basket
      * Decrement an item from the cart.
      *
      * @param string $itemIdentifier Unique item identifier
+     * @return ItemInterface|bool
      */
-    public function dec(string $itemIdentifier): bool|int
+    public function dec(string $itemIdentifier): ItemInterface|bool
     {
         /** @var ItemInterface $item */
         if ($item = Cart::item($itemIdentifier)) {
             if ($item->quantity > 1) {
                 $item->quantity--;
                 $this->events->dispatch(new CartItemUpdated($this->item($itemIdentifier)));
-                return $item->quantity;
+                return $item;
             } else {
                 $this->events->dispatch(new CartItemRemoved($item));
                 Cart::remove($itemIdentifier);
