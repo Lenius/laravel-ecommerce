@@ -17,16 +17,16 @@ class EcommerceController extends Controller
     {
         $router = app()->make('router');
 
-        $router->get('basket', [EcommerceController::class, 'index'])->name('ecommerce.cart');
-        $router->get('basket/debug', [EcommerceController::class, 'debug'])->name('ecommerce.cart.debug');
-        $router->get('basket/demo', [EcommerceController::class, 'demo'])->name('ecommerce.cart.demo');
-        $router->get('basket/destroy', [EcommerceController::class, 'destroy'])->name('ecommerce.cart.destroy');
-        $router->post('basket/update', [EcommerceController::class, 'update'])->name('ecommerce.cart.update');
+        $router->get('cart/show', [self::class, 'index'])->name('ecommerce.cart.show');
+        $router->get('cart/debug', [self::class, 'debug'])->name('ecommerce.cart.debug');
+        $router->get('cart/demo', [self::class, 'demo'])->name('ecommerce.cart.demo');
+        $router->get('cart/destroy', [self::class, 'destroy'])->name('ecommerce.cart.destroy');
+        $router->post('cart/update', [self::class, 'update'])->name('ecommerce.cart.update');
 
-        $router->any('basket/{id}/add', [EcommerceController::class, 'add'])->name('ecommerce.cart.item.add');
-        $router->get('basket/{id}/dec', [EcommerceController::class, 'dec'])->name('ecommerce.cart.item.dec');
-        $router->get('basket/{id}/inc', [EcommerceController::class, 'inc'])->name('ecommerce.cart.item.inc');
-        $router->get('basket/{id}/remove', [EcommerceController::class, 'remove'])->name('ecommerce.cart.item.remove');
+        $router->any('cart/{id}/add', [self::class, 'add'])->name('ecommerce.cart.item.add');
+        $router->get('cart/{id}/dec', [self::class, 'dec'])->name('ecommerce.cart.item.dec');
+        $router->get('cart/{id}/inc', [self::class, 'inc'])->name('ecommerce.cart.item.inc');
+        $router->get('cart/{id}/remove', [self::class, 'remove'])->name('ecommerce.cart.item.remove');
     }
 
     public function index(): Factory|View|Application
@@ -52,7 +52,7 @@ class EcommerceController extends Controller
 
         Cart::insert(new Item($item));
 
-        return redirect()->route('ecommerce.cart');
+        return redirect()->route('ecommerce.cart.show');
     }
 
     public function debug(): array
@@ -71,7 +71,7 @@ class EcommerceController extends Controller
     {
         Cart::destroy();
 
-        return redirect()->route('ecommerce.cart');
+        return redirect()->route('ecommerce.cart.show');
     }
 
     public function update(Request $request): RedirectResponse
@@ -91,7 +91,7 @@ class EcommerceController extends Controller
             }
         }
 
-        return redirect()->route('ecommerce.cart');
+        return redirect()->route('ecommerce.cart.show');
     }
 
     public function inc(string $itemIdentifier): RedirectResponse
@@ -105,7 +105,7 @@ class EcommerceController extends Controller
             }
         }
 
-        return redirect()->route('ecommerce.cart');
+        return redirect()->route('ecommerce.cart.show');
     }
 
     public function dec(string $itemIdentifier): RedirectResponse
@@ -119,7 +119,7 @@ class EcommerceController extends Controller
             }
         }
 
-        return redirect()->route('ecommerce.cart');
+        return redirect()->route('ecommerce.cart.show');
     }
 
     public function remove(string $itemIdentifier): RedirectResponse
@@ -128,7 +128,7 @@ class EcommerceController extends Controller
             Cart::remove($itemIdentifier);
         }
 
-        return redirect()->route('ecommerce.cart');
+        return redirect()->route('ecommerce.cart.show');
     }
 
     public function demo(): RedirectResponse
@@ -149,6 +149,6 @@ class EcommerceController extends Controller
 
         Cart::insert(new Item($item));
 
-        return redirect()->route('ecommerce.cart');
+        return redirect()->route('ecommerce.cart.show');
     }
 }
