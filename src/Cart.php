@@ -6,7 +6,13 @@ use Illuminate\Contracts\Events\Dispatcher;
 use Lenius\Basket\Basket;
 use Lenius\Basket\IdentifierInterface;
 use Lenius\Basket\Item;
+use Lenius\Basket\ItemInterface;
 use Lenius\Basket\StorageInterface;
+use Lenius\LaravelEcommerce\Events\CartDestroyed;
+use Lenius\LaravelEcommerce\Events\CartItemDecreased;
+use Lenius\LaravelEcommerce\Events\CartItemIncremented;
+use Lenius\LaravelEcommerce\Events\CartItemRemoved;
+use Lenius\LaravelEcommerce\Events\CartItemUpdated;
 
 class Cart extends Basket
 {
@@ -37,7 +43,7 @@ class Cart extends Basket
         foreach ($this->contents() as $item) {
             if ($item->identifier == $itemIdentifier) {
                 $item->update($key, $value);
-                $this->events->dispatch('cart.updated', $this->item($itemIdentifier));
+                $this->events->dispatch(new CartItemUpdated($this->item($itemIdentifier)));
 
                 break;
             }
@@ -45,13 +51,13 @@ class Cart extends Basket
     }
 
     /**
-     * Remove an item from the basket.
+     * Remove an item from the cart.
      *
      * @param string $identifier Unique item identifier
      */
     public function remove(string $identifier): void
     {
-        $this->events->dispatch('cart.removed', $this->item($identifier));
+        $this->events->dispatch(new CartItemRemoved($this->item($identifier)));
 
         $this->store->remove($identifier);
     }
@@ -63,6 +69,48 @@ class Cart extends Basket
     {
         $this->store->destroy();
 
-        $this->events->dispatch('cart.destroyed', []);
+        $this->events->dispatch(new CartDestroyed());
+    }
+
+    /**
+     * Increment an item from the cart.
+     *
+     * @param string $itemIdentifier Unique item identifier
+     * @return ItemInterface|bool
+     */
+    public function inc(string $itemIdentifier): ItemInterface|bool
+    {
+        /** @var ItemInterface $item */
+        if ($item = Cart::item($itemIdentifier)) {
+            $item->quantity++;
+            $this->events->dispatch(new CartItemIncremented($this->item($itemIdentifier)));
+
+            return $item;
+        }
+
+        return false;
+    }
+
+    /**
+     * Decrement an item from the cart.
+     *
+     * @param string $itemIdentifier Unique item identifier
+     * @return ItemInterface|bool
+     */
+    public function dec(string $itemIdentifier): ItemInterface|bool
+    {
+        /** @var ItemInterface $item */
+        if ($item = Cart::item($itemIdentifier)) {
+            if ($item->quantity > 1) {
+                $item->quantity--;
+                $this->events->dispatch(new CartItemDecreased($this->item($itemIdentifier)));
+                return $item;
+            } else {
+                $this->events->dispatch(new CartItemRemoved($item));
+                Cart::remove($itemIdentifier);
+            }
+        }
+
+        return false;
     }
 }
