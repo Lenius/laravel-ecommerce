@@ -133,7 +133,7 @@ The cart also has events build in. There are five events available for you to li
 |---------------------|----------------------------------------|--------------------------------------|
 | CartItemUpdated     | When an item in the cart was updated.  | The `CartItem` that was updated.     |
 | CartItemRemoved     | When an item is removed from the cart. | The `CartItem` that was removed.     |
-| CartItemDecrease    | When an item is dec from the cart.     | The `CartItem` that was decreased.   |
+| CartItemDecreased   | When an item is dec from the cart.     | The `CartItem` that was decreased.   |
 | CartItemIncremented | When an item is inc from the cart.     | The `CartItem` that was incremented. |
 | CartDestroyed       | When the cart was destroyed.           | -                                    |
 
