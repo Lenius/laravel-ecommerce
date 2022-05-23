@@ -7,6 +7,9 @@ use Lenius\Basket\Basket;
 use Lenius\Basket\IdentifierInterface;
 use Lenius\Basket\Item;
 use Lenius\Basket\StorageInterface;
+use Lenius\LaravelEcommerce\Events\CartDestroyed;
+use Lenius\LaravelEcommerce\Events\CartItemRemoved;
+use Lenius\LaravelEcommerce\Events\CartItemUpdated;
 
 class Cart extends Basket
 {
@@ -37,7 +40,7 @@ class Cart extends Basket
         foreach ($this->contents() as $item) {
             if ($item->identifier == $itemIdentifier) {
                 $item->update($key, $value);
-                $this->events->dispatch('cart.updated', $this->item($itemIdentifier));
+                $this->events->dispatch(new CartItemUpdated($this->item($itemIdentifier)));
 
                 break;
             }
@@ -51,7 +54,7 @@ class Cart extends Basket
      */
     public function remove(string $identifier): void
     {
-        $this->events->dispatch('cart.removed', $this->item($identifier));
+        $this->events->dispatch(new CartItemRemoved($this->item($identifier)));
 
         $this->store->remove($identifier);
     }
@@ -63,6 +66,6 @@ class Cart extends Basket
     {
         $this->store->destroy();
 
-        $this->events->dispatch('cart.destroyed', []);
+        $this->events->dispatch(new CartDestroyed());
     }
 }

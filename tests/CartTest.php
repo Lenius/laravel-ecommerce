@@ -7,6 +7,9 @@ use Lenius\Basket\Identifier\Runtime as RuntimeIdentifier;
 use Lenius\Basket\Item;
 use Lenius\Basket\Storage\Runtime as RuntimeStore;
 use Lenius\LaravelEcommerce\Cart;
+use Lenius\LaravelEcommerce\Events\CartDestroyed;
+use Lenius\LaravelEcommerce\Events\CartItemRemoved;
+use Lenius\LaravelEcommerce\Events\CartItemUpdated;
 use PHPUnit\Framework\TestCase;
 
 class CartTest extends TestCase
@@ -65,7 +68,7 @@ class EventMock implements Dispatcher
 
     public function dispatch($event, $payload = [], $halt = false)
     {
-        // TODO: Implement dispatch() method.
+
     }
 
     public function push($event, $payload = [])
