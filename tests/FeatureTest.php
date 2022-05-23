@@ -13,10 +13,10 @@ class FeatureTest extends TestCase
 
     public function test_ecommerce_basket_add()
     {
-        $this->get(route('ecommerce.basket.item.add', [1]))
+        $this->get(route('ecommerce.cart.item.add', [1]))
             ->assertStatus(302);
 
-        $this->get(route('ecommerce.basket.debug'))
+        $this->get(route('ecommerce.cart.debug'))
             ->assertJson([
                 'sum'         => 100,
                 'tax'         => 25,
@@ -29,18 +29,19 @@ class FeatureTest extends TestCase
 
     public function test_ecommerce_basket_dec()
     {
-        $this->get(route('ecommerce.basket.demo'))
+        $this->get(route('ecommerce.cart.demo'))
             ->assertStatus(302)
-            ->assertRedirect(route('ecommerce.basket'));
+            ->assertRedirect(route('ecommerce.cart'));
 
-        $basket = app('basket');
+        $basket = app('cart');
 
         $item = array_key_first($basket->contents());
-        $this->get(route('ecommerce.basket.item.dec', [$item]))
-            ->assertStatus(302)
-            ->assertRedirect(route('ecommerce.basket'));
 
-        $this->get(route('ecommerce.basket.debug'))
+        $this->get(route('ecommerce.cart.item.dec', [$item]))
+            ->assertStatus(302)
+            ->assertRedirect(route('ecommerce.cart'));
+
+        $this->get(route('ecommerce.cart.debug'))
             ->assertJson([
                 'sum'         => 0,
                 'tax'         => 0,
@@ -52,18 +53,18 @@ class FeatureTest extends TestCase
 
     public function test_ecommerce_basket_inc()
     {
-        $this->get(route('ecommerce.basket.demo'))
+        $this->get(route('ecommerce.cart.demo'))
             ->assertStatus(302)
-            ->assertRedirect(route('ecommerce.basket'));
+            ->assertRedirect(route('ecommerce.cart'));
 
-        $basket = app('basket');
+        $basket = app('cart');
 
         $item = array_key_first($basket->contents());
-        $this->get(route('ecommerce.basket.item.inc', [$item]))
+        $this->get(route('ecommerce.cart.item.inc', [$item]))
             ->assertStatus(302)
-            ->assertRedirect(route('ecommerce.basket'));
+            ->assertRedirect(route('ecommerce.cart'));
 
-        $this->get(route('ecommerce.basket.debug'))
+        $this->get(route('ecommerce.cart.debug'))
             ->assertJson([
                 'sum'         => 200,
                 'tax'         => 50,
@@ -76,15 +77,15 @@ class FeatureTest extends TestCase
 
     public function test_ecommerce_basket_destroy()
     {
-        $this->get(route('ecommerce.basket.demo'))
+        $this->get(route('ecommerce.cart.demo'))
             ->assertStatus(302)
-            ->assertRedirect(route('ecommerce.basket'));
+            ->assertRedirect(route('ecommerce.cart'));
 
-        $this->get(route('ecommerce.basket.destroy'))
+        $this->get(route('ecommerce.cart.destroy'))
             ->assertStatus(302)
-            ->assertRedirect(route('ecommerce.basket'));
+            ->assertRedirect(route('ecommerce.cart'));
 
-        $this->get(route('ecommerce.basket.debug'))
+        $this->get(route('ecommerce.cart.debug'))
             ->assertJson([
                 'sum'         => 0,
                 'tax'         => 0,

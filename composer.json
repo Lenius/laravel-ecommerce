@@ -44,7 +44,7 @@
                 "Lenius\\LaravelEcommerce\\EcommerceServiceProvider"
             ],
             "aliases": {
-                "Basket": "Lenius\\LaravelEcommerce\\Facades\\Basket"
+                "Cart": "Lenius\\LaravelEcommerce\\Facades\\Cart"
             }
         }
     },

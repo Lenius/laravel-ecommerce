@@ -5,7 +5,7 @@ namespace Lenius\LaravelEcommerce\Test;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Foundation\Application;
 use Lenius\LaravelEcommerce\EcommerceServiceProvider;
-use Lenius\LaravelEcommerce\Facades\Basket;
+use Lenius\LaravelEcommerce\Facades\Cart;
 use Orchestra\Testbench\TestCase as Orchestra;
 
 abstract class TestCase extends Orchestra
@@ -36,7 +36,7 @@ abstract class TestCase extends Orchestra
     protected function getPackageAliases($app)
     {
         return [
-            'Basket' => Basket::class,
+            'Cart' => Cart::class,
         ];
     }
 
