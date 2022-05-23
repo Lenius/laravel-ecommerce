@@ -9,7 +9,7 @@ use Lenius\Basket\Item;
 use Lenius\Basket\ItemInterface;
 use Lenius\Basket\StorageInterface;
 use Lenius\LaravelEcommerce\Events\CartDestroyed;
-use Lenius\LaravelEcommerce\Events\CartItemDecrease;
+use Lenius\LaravelEcommerce\Events\CartItemDecreased;
 use Lenius\LaravelEcommerce\Events\CartItemIncremented;
 use Lenius\LaravelEcommerce\Events\CartItemRemoved;
 use Lenius\LaravelEcommerce\Events\CartItemUpdated;
@@ -103,7 +103,7 @@ class Cart extends Basket
         if ($item = Cart::item($itemIdentifier)) {
             if ($item->quantity > 1) {
                 $item->quantity--;
-                $this->events->dispatch(new CartItemDecrease($this->item($itemIdentifier)));
+                $this->events->dispatch(new CartItemDecreased($this->item($itemIdentifier)));
                 return $item;
             } else {
                 $this->events->dispatch(new CartItemRemoved($item));
