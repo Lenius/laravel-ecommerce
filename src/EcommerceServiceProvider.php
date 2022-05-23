@@ -4,7 +4,6 @@ namespace Lenius\LaravelEcommerce;
 
 use Illuminate\Support\Facades\Route;
 use Illuminate\Support\ServiceProvider;
-use Lenius\Basket\Basket;
 use Lenius\LaravelEcommerce\Identifier\LaravelCookie;
 use Lenius\LaravelEcommerce\Storage\LaravelSession;
 
@@ -15,7 +14,7 @@ class EcommerceServiceProvider extends ServiceProvider
      *
      * @return void
      */
-    public function boot()
+    public function boot(): void
     {
         if ($this->app->runningInConsole()) {
             $this->publishes([
@@ -60,10 +59,10 @@ class EcommerceServiceProvider extends ServiceProvider
      *
      * @return void
      */
-    public function register()
+    public function register(): void
     {
-        $this->app->singleton('basket', function () {
-            return new Basket(new LaravelSession(), new LaravelCookie());
+        $this->app->singleton('cart', function () {
+            return new Cart(new LaravelSession(), new LaravelCookie(), resolve('events'));
         });
     }
 }

@@ -18,10 +18,10 @@ use Lenius\Basket\Item;
  * @method static destroy()
  * @method static string insert(Item $param)
  */
-class Basket extends Facade
+class Cart extends Facade
 {
     protected static function getFacadeAccessor(): string
     {
-        return 'basket';
+        return 'cart';
     }
 }
