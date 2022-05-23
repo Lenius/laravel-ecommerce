@@ -6,6 +6,7 @@ use Illuminate\Contracts\Events\Dispatcher;
 use Lenius\Basket\Basket;
 use Lenius\Basket\IdentifierInterface;
 use Lenius\Basket\Item;
+use Lenius\Basket\ItemInterface;
 use Lenius\Basket\StorageInterface;
 use Lenius\LaravelEcommerce\Events\CartDestroyed;
 use Lenius\LaravelEcommerce\Events\CartItemRemoved;
@@ -48,7 +49,7 @@ class Cart extends Basket
     }
 
     /**
-     * Remove an item from the basket.
+     * Remove an item from the cart.
      *
      * @param string $identifier Unique item identifier
      */
@@ -67,5 +68,38 @@ class Cart extends Basket
         $this->store->destroy();
 
         $this->events->dispatch(new CartDestroyed());
+    }
+
+    /**
+     * Increment an item from the cart.
+     *
+     * @param string $itemIdentifier Unique item identifier
+     */
+    public function inc(string $itemIdentifier)
+    {
+        /** @var ItemInterface $item */
+        if ($item = Cart::item($itemIdentifier)) {
+            $item->quantity++;
+            $this->events->dispatch(new CartItemUpdated($this->item($itemIdentifier)));
+        }
+    }
+
+    /**
+     * Decrement an item from the cart.
+     *
+     * @param string $itemIdentifier Unique item identifier
+     */
+    public function dec(string $itemIdentifier)
+    {
+        /** @var ItemInterface $item */
+        if ($item = Cart::item($itemIdentifier)) {
+            if ($item->quantity > 1) {
+                $item->quantity--;
+                $this->events->dispatch(new CartItemUpdated($this->item($itemIdentifier)));
+            } else {
+                $this->events->dispatch(new CartItemRemoved($item));
+                Cart::remove($itemIdentifier);
+            }
+        }
     }
 }

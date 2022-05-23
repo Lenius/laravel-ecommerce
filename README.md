@@ -129,11 +129,11 @@ Cart::remove($itemIdentifier)
 
 The cart also has events build in. There are five events available for you to listen for.
 
-| Event          | Fired                                  | Parameter                        |
-|----------------|----------------------------------------| -------------------------------- |
-| cart.updated   | When an item in the cart was updated.  | The `CartItem` that was updated. |
-| cart.removed   | When an item is removed from the cart. | The `CartItem` that was removed. |
-| cart.destroyed | When the cart was destroyed.           | -                                |
+| Event           | Fired                                  | Parameter                        |
+|-----------------|----------------------------------------| -------------------------------- |
+| CartItemUpdated | When an item in the cart was updated.  | The `CartItem` that was updated. |
+| CartItemRemoved | When an item is removed from the cart. | The `CartItem` that was removed. |
+| CartDestroyed   | When the cart was destroyed.           | -                                |
 
 ## Testing
 

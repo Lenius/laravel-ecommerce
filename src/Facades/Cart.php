@@ -16,6 +16,8 @@ use Lenius\Basket\Item;
  * @method static remove(string $itemIdentifier)
  * @method static float weight()
  * @method static destroy()
+ * @method static inc(string $itemIdentifier)
+ * @method static dec(string $itemIdentifier)
  * @method static string insert(Item $param)
  */
 class Cart extends Facade

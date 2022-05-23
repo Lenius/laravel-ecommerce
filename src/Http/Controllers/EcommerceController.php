@@ -96,28 +96,14 @@ class EcommerceController extends Controller
 
     public function inc(string $itemIdentifier): RedirectResponse
     {
-        /** @var ItemInterface $item */
-        if ($item = Cart::item($itemIdentifier)) {
-            if ($item->quantity > 0) {
-                ++$item->quantity;
-            } else {
-                Cart::remove($itemIdentifier);
-            }
-        }
+        Cart::inc($itemIdentifier);
 
         return redirect()->route('ecommerce.cart.show');
     }
 
     public function dec(string $itemIdentifier): RedirectResponse
     {
-        /** @var ItemInterface $item */
-        if ($item = Cart::item($itemIdentifier)) {
-            if ($item->quantity > 1) {
-                --$item->quantity;
-            } else {
-                Cart::remove($itemIdentifier);
-            }
-        }
+        Cart::dec($itemIdentifier);
 
         return redirect()->route('ecommerce.cart.show');
     }
