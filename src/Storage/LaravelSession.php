@@ -11,10 +11,10 @@ class LaravelSession extends Runtime implements StorageInterface
 {
     public function restore(): void
     {
-        $carts = (array) Session::get('cart');
+        $carts = Session::get('cart');
 
-        if ($carts) {
-            static::$cart = $carts;
+        if (! empty($carts)) {
+            static::$cart = (array) $carts;
         }
     }
 
