@@ -63,6 +63,6 @@ class Cart extends Basket
     {
         $this->store->destroy();
 
-        $this->events->dispatch('cart.destroy', []);
+        $this->events->dispatch('cart.destroyed', []);
     }
 }
