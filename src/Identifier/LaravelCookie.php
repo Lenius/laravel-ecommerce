@@ -2,6 +2,8 @@
 
 namespace Lenius\LaravelEcommerce\Identifier;
 
+use Illuminate\Support\Facades\Cookie;
+use Illuminate\Support\Str;
 use Lenius\Basket\IdentifierInterface;
 
 /**
@@ -34,9 +36,9 @@ class LaravelCookie implements IdentifierInterface
      */
     public function regenerate(): string
     {
-        $identifier = (string) \Str::uuid();
+        $identifier = (string) Str::uuid();
 
-        \Cookie::queue(cookie('cart_identifier', $identifier, 0, '/'));
+        Cookie::queue(cookie('cart_identifier', $identifier, 0, '/'));
 
         return $identifier;
     }
@@ -48,6 +50,6 @@ class LaravelCookie implements IdentifierInterface
      */
     public function forget(): void
     {
-        \Cookie::queue(\Cookie::forget('cart_identifier'));
+        Cookie::queue(Cookie::forget('cart_identifier'));
     }
 }
