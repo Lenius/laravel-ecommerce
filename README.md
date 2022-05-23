@@ -33,9 +33,9 @@ Look at one of the following topics to learn more
 
 The shoppingcart gives you the following methods to use:
 
-### Cart::add()
+### Cart::insert()
 
-Adding an item to the cart is really simple, you just use the `add()` method, which accepts a variety of parameters.
+Adding an item to the cart is really simple, you just use the `insert()` method, which accepts a variety of parameters.
 
 In its most basic form you can specify the id, name, quantity, price of the product you'd like to add to the cart.
 
@@ -122,7 +122,7 @@ Cart::has($itemIdentifier);
 
 ### Remove an item from the Cart
 ```php
-Cart::remove($identifier)
+Cart::remove($itemIdentifier)
 ```
 
 ## Events

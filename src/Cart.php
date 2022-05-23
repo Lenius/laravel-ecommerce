@@ -38,6 +38,7 @@ class Cart extends Basket
             if ($item->identifier == $itemIdentifier) {
                 $item->update($key, $value);
                 $this->events->dispatch('cart.updated', $this->item($itemIdentifier));
+
                 break;
             }
         }
