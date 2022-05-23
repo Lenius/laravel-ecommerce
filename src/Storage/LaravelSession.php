@@ -13,8 +13,8 @@ class LaravelSession extends Runtime implements StorageInterface
     {
         $carts = (array) Session::get('cart');
 
-        if ($carts) {
-            static::$cart = $carts;
+        if (! empty($carts)) {
+            static::$cart = (array) $carts;
         }
     }
 
@@ -83,7 +83,7 @@ class LaravelSession extends Runtime implements StorageInterface
      *
      * @internal param mixed $id The item id
      */
-    public function item(string $identifier)
+    public function item(string $identifier): ItemInterface|bool
     {
         foreach (static::$cart[$this->id] as $item) {
             if ($item->identifier == $identifier) {
@@ -101,7 +101,7 @@ class LaravelSession extends Runtime implements StorageInterface
      *
      * @return bool|ItemInterface
      */
-    public function find(string $id)
+    public function find(string $id): ItemInterface|bool
     {
         foreach (static::$cart[$this->id] as $item) {
             if ($item->id == $id) {
