@@ -64,16 +64,5 @@ class EcommerceServiceProvider extends ServiceProvider
         $this->app->singleton('cart', function () {
             return new Cart(new LaravelSession(), new LaravelCookie(), resolve('events'));
         });
-
-
-//        $this->app->singleton('Lenius\Basket\StorageInterface', function () {
-//            return new LaravelSession();
-//        });
-//
-//        $this->app->singleton('Lenius\Basket\IdentifierInterface', function () {
-//            return new LaravelCookie();
-//        });
-//
-//        $this->app->bind('cart', 'Lenius\LaravelEcommerce\Cart');
     }
 }

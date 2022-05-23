@@ -2,6 +2,8 @@
 
 namespace Lenius\LaravelEcommerce\Http\Controllers;
 
+use Illuminate\Contracts\Foundation\Application;
+use Illuminate\Contracts\View\Factory;
 use Illuminate\Contracts\View\View;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
@@ -27,12 +29,12 @@ class EcommerceController extends Controller
         $router->get('basket/{id}/remove', [EcommerceController::class, 'remove'])->name('ecommerce.cart.item.remove');
     }
 
-    public function index(): View
+    public function index(): Factory|View|Application
     {
         return view('ecommerce::cart');
     }
 
-    public function add(Request $request, $id)
+    public function add(Request $request, string $id): RedirectResponse
     {
         $item = [
             'id'            => 1,
