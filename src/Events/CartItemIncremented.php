@@ -11,12 +11,12 @@ class CartItemIncremented
     use Dispatchable, InteractsWithSockets, SerializesModels;
 
 
-    public $item;
+    public mixed $item;
 
     /**
      * Create a new event instance.
      *
-     * @return void
+     * @param mixed $item
      */
     public function __construct($item)
     {
