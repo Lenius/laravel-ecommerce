@@ -6,7 +6,7 @@ use Illuminate\Support\Facades\Facade;
 use Lenius\Basket\Item;
 
 /**
- * Basket facade
+ * Cart facade
  *
  * @method static array contents()
  * @method static int totalItems()

@@ -33,13 +33,13 @@ class Cart extends Basket
     /**
      * Update an item.
      *
-     * @param string $itemIdentifier The unique item identifier
-     * @param mixed $key The key to update, or an array of key-value pairs
-     * @param mixed $value The value to set $key to
+     * @param string $itemIdentifier
+     * @param mixed $key
+     * @param mixed $value
      */
     public function update(string $itemIdentifier, $key, $value = null): void
     {
-        /** @var Item $item */
+        /** @var ItemInterface $item */
         foreach ($this->contents() as $item) {
             if ($item->identifier == $itemIdentifier) {
                 $item->update($key, $value);
@@ -53,7 +53,7 @@ class Cart extends Basket
     /**
      * Remove an item from the cart.
      *
-     * @param string $identifier Unique item identifier
+     * @param string $identifier
      */
     public function remove(string $identifier): void
     {
@@ -75,14 +75,15 @@ class Cart extends Basket
     /**
      * Increment an item from the cart.
      *
-     * @param string $itemIdentifier Unique item identifier
+     * @param string $itemIdentifier
+     *
      * @return ItemInterface|bool
      */
     public function inc(string $itemIdentifier): ItemInterface|bool
     {
-        /** @var ItemInterface $item */
         if ($item = Cart::item($itemIdentifier)) {
-            $item->quantity++;
+            /** @var ItemInterface $item */
+            $item->setQuantity($item->getQuantity() + 1);
             $this->events->dispatch(new CartItemIncremented($item));
 
             return $item;
@@ -94,15 +95,16 @@ class Cart extends Basket
     /**
      * Decrement an item from the cart.
      *
-     * @param string $itemIdentifier Unique item identifier
+     * @param string $itemIdentifier
+     *
      * @return ItemInterface|bool
      */
     public function dec(string $itemIdentifier): ItemInterface|bool
     {
-        /** @var ItemInterface $item */
         if ($item = Cart::item($itemIdentifier)) {
-            if ($item->quantity > 1) {
-                $item->quantity--;
+            /** @var ItemInterface $item */
+            if ($item->getQuantity() > 1) {
+                $item->setQuantity($item->getQuantity() - 1);
                 $this->events->dispatch(new CartItemDecreased($item));
                 return $item;
             } else {

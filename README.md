@@ -49,6 +49,14 @@ Cart::insert(new Item([
 ]));
 ```
 
+Cart::insert() accept a class which implements ItemInterface
+```php
+class CustomItem implements ItemInterface
+{
+
+}
+```
+
 ### Inserting items with options into the cart
 Inserting an item into the cart is easy. The required keys are id, name, price and quantity, although you can pass
 over any custom data that you like. If option items contains price or weight there values are added to the total weight / price of the product.
@@ -94,18 +102,18 @@ cart loop then you can update a specific item using the below example.
 ```php
 foreach (Cart::contents() as $item) {
     $item->name = 'Foo';
-    $item->quantity = 1;
+    $item->setQuantity(1);
 }
 ```
 
 ### Destroying/emptying the cart
-You can completely empty/destroy the basket by using the ```destroy()``` method.
+You can completely empty/destroy the cart by using the ```destroy()``` method.
 ```php
 Cart::destroy()
 ```
 
 ### Retrieve the cart contents
-You can loop the basket contents by using the following method
+You can loop the cart contents by using the following method
 ```php
 Cart::contents();
 ```
@@ -123,6 +131,16 @@ Cart::has($itemIdentifier);
 ### Remove an item from the Cart
 ```php
 Cart::remove($itemIdentifier)
+```
+
+### Increment an item from the Cart
+```php
+Cart::inc($itemIdentifier)
+```
+
+### Decrement an item from the Cart
+```php
+Cart::dec($itemIdentifier)
 ```
 
 ## Events

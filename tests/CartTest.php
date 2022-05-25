@@ -41,6 +41,34 @@ class CartTest extends TestCase
 
         $this->assertEquals($identifier, $actualId);
     }
+
+    public function testInc(): void
+    {
+        $actualId = $this->cart->insert(new Item([
+            'id'       => 'foo',
+            'name'     => 'bar',
+            'price'    => 100,
+            'quantity' => 1,
+            'weight'   => 200,
+        ]));
+
+        $this->assertEquals(2, $this->cart->inc($actualId)->getQuantity());
+    }
+
+    public function testDec(): void
+    {
+        $actualId = $this->cart->insert(new Item([
+            'id'       => 'foo',
+            'name'     => 'bar',
+            'price'    => 100,
+            'quantity' => 2,
+            'weight'   => 200,
+        ]));
+
+        $this->assertEquals(1, $this->cart->dec($actualId)->getQuantity());
+        $this->assertFalse($this->cart->dec($actualId));
+        $this->assertEquals(0, $this->cart->totalItems());
+    }
 }
 
 class EventMock implements Dispatcher
