@@ -106,6 +106,7 @@ class Cart extends Basket
             if ($item->getQuantity() > 1) {
                 $item->setQuantity($item->getQuantity() - 1);
                 $this->events->dispatch(new CartItemDecreased($item));
+
                 return $item;
             } else {
                 $this->events->dispatch(new CartItemRemoved($item));
