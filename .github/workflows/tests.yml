@@ -2,7 +2,7 @@ name: tests
 
 on:
   push:
-    branches: [ laravel-10 ]
+    branches: [ main ]
   pull_request:
     branches: [ main ]
   schedule:
@@ -16,11 +16,9 @@ jobs:
             matrix:
                 os: [ubuntu-latest]
                 php: [8.1, 8.2]
-                laravel: [9.*, 8.*]
+                laravel: [10.*, 9.*]
                 stability: [prefer-stable]
                 include:
-                    - laravel: 8.*
-                      testbench: 6.*
                     - laravel: 9.*
                       testbench: 7.*
                     - laravel: 10.*
