@@ -2,6 +2,7 @@ name: tests
 
 on:
   push:
+    branches: [ laravel-10 ]
   pull_request:
     branches: [ main ]
   schedule:
