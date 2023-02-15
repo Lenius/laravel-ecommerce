@@ -37,7 +37,7 @@ class LaravelSession extends Runtime implements StorageInterface
      *
      * @return array
      */
-    public function &data($asArray = false): array
+    public function &data(bool $asArray = false): array
     {
         $cart = &static::$cart[$this->id];
 
