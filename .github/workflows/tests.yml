@@ -2,7 +2,8 @@ name: tests
 
 on:
   push:
-    branches: [ main ]
+    branches-ignore:
+      - main
   pull_request:
     branches: [ main ]
   schedule:
@@ -24,7 +25,7 @@ jobs:
                     - laravel: 9.*
                       testbench: 7.*
                     - laravel: 10.*
-                      testbench: 7.*
+                      testbench: 8.*
         name: P${{ matrix.php }} - L${{ matrix.laravel }} - ${{ matrix.stability }} - ${{ matrix.os }}
 
         steps:
