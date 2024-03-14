@@ -1,6 +1,6 @@
 {
     "name": "lenius/laravel-ecommerce",
-    "description": "Shopping basket package for laravel 9 & 10",
+    "description": "Shopping basket package for laravel 10 & 11",
     "homepage": "https://github.com/Lenius/laravel-ecommerce",
     "keywords": ["laravel", "framework", "Laravel-Basket", "Laravel Basket", "e-commerce", "lenius"],
     "license": "MIT",
@@ -20,9 +20,10 @@
     },
     "require-dev": {
         "friendsofphp/php-cs-fixer": "^3.4",
+        "larastan/larastan": "^2.7",
+        "laravel/pint": "^1.14",
         "orchestra/testbench": "^6.0|^7.0|^8.0|^9.0",
-        "phpunit/phpunit": "^9.4|^10.1",
-        "larastan/larastan": "^2.7"
+        "phpunit/phpunit": "^9.4|^10.1"
     },
     "config": {
         "sort-packages": true

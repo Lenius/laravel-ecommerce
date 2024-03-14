@@ -25,4 +25,4 @@ jobs:
                   composer update --no-interaction --prefer-dist
 
             - name: Run PHPStan
-              run: ./vendor/bin/phpstan
+              run: ./vendor/bin/phpstan --error-format=github
