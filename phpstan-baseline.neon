@@ -1,21 +1,16 @@
 parameters:
 	ignoreErrors:
 		-
+			message: "#^Method Lenius\\\\LaravelEcommerce\\\\EcommerceServiceProvider\\:\\:routeConfiguration\\(\\) return type has no value type specified in iterable type array\\.$#"
+			count: 1
+			path: src/EcommerceServiceProvider.php
+
+		-
 			message: "#^Parameter \\#3 \\$events of class Lenius\\\\LaravelEcommerce\\\\Cart constructor expects Illuminate\\\\Contracts\\\\Events\\\\Dispatcher, mixed given\\.$#"
 			count: 1
 			path: src/EcommerceServiceProvider.php
 
 		-
-			message: "#^Cannot call method cookie\\(\\) on mixed\\.$#"
+			message: "#^Method Lenius\\\\LaravelEcommerce\\\\Storage\\\\LaravelSession\\:\\:data\\(\\) return type has no value type specified in iterable type array\\.$#"
 			count: 1
-			path: src/Identifier/LaravelCookie.php
-
-		-
-			message: "#^Cannot call method hasCookie\\(\\) on mixed\\.$#"
-			count: 1
-			path: src/Identifier/LaravelCookie.php
-
-		-
-			message: "#^Using nullsafe method call on non\\-nullable type mixed\\. Use \\-\\> instead\\.$#"
-			count: 1
-			path: src/Identifier/LaravelCookie.php
+			path: src/Storage/LaravelSession.php

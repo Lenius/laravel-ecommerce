@@ -5,8 +5,7 @@ parameters:
     level: max
     paths:
         - src
+        - config
     reportUnmatchedIgnoredErrors: false
-    checkGenericClassInNonGenericObjectType: false
-    checkMissingIterableValueType: false
     excludePaths:
         - ./*/*/EcommerceController.php
