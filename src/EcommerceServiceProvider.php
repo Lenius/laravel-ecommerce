@@ -42,9 +42,7 @@ class EcommerceServiceProvider extends ServiceProvider
             ], 'lang');
         };
 
-        if (config('ecommerce.storage', 'session') === 'database') {
-            $this->loadMigrationsFrom(__DIR__.'/../database/migrations');
-        }
+        $this->loadMigrationsFrom(__DIR__.'/../database/migrations');
         $this->loadTranslationsFrom(__DIR__.'/../resources/lang', 'ecommerce');
         $this->loadViewsFrom(__DIR__.'/../resources/views', 'ecommerce');
 
