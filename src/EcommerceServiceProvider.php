@@ -2,6 +2,7 @@
 
 namespace Lenius\LaravelEcommerce;
 
+use Illuminate\Contracts\Events\Dispatcher;
 use Illuminate\Support\Facades\Route;
 use Illuminate\Support\ServiceProvider;
 use Lenius\LaravelEcommerce\Identifier\LaravelCookie;
@@ -48,9 +49,20 @@ class EcommerceServiceProvider extends ServiceProvider
 
     protected function routeConfiguration(): array
     {
+        $prefix = config('ecommerce.prefix', 'ecommerce');
+        $middleware = config('ecommerce.middleware', ['web']);
+
+        if (! is_string($prefix)) {
+            $prefix = 'ecommerce';
+        }
+
+        if (! is_string($middleware) && ! is_array($middleware)) {
+            $middleware = ['web'];
+        }
+
         return [
-            'prefix'     => config('ecommerce.prefix', 'ecommerce'),
-            'middleware' => config('ecommerce.middleware', 'web'),
+            'prefix'     => $prefix,
+            'middleware' => $middleware,
         ];
     }
 
@@ -62,7 +74,7 @@ class EcommerceServiceProvider extends ServiceProvider
     public function register(): void
     {
         $this->app->singleton('cart', function () {
-            return new Cart(new LaravelSession(), new LaravelCookie(), resolve('events'));
+            return new Cart(new LaravelSession(), new LaravelCookie(), $this->app->make(Dispatcher::class));
         });
     }
 }
