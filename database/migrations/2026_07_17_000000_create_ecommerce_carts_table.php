@@ -9,7 +9,13 @@ return new class extends Migration
 {
     public function up(): void
     {
-        $this->schema()->create($this->table(), function (Blueprint $table): void {
+        $schema = $this->schema();
+
+        if ($schema->hasTable($this->table())) {
+            return;
+        }
+
+        $schema->create($this->table(), function (Blueprint $table): void {
             $table->id();
             $table->uuid('identifier')->unique();
             $table->string('user_id')->nullable()->index();
