@@ -9,8 +9,7 @@
 
 ## Installation
 
-This package supports Laravel 11 through 13 and PHP 8.2 through 8.5.
-Laravel 13 requires PHP 8.3 or newer.
+This package supports Laravel 11 through 13 and PHP 8.3 through 8.5.
 
 You can install this package via composer using:
 
