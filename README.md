@@ -29,7 +29,173 @@ php artisan vendor:publish --provider="Lenius\LaravelEcommerce\EcommerceServiceP
 Look at one of the following topics to learn more
 
 * [Usage](#usage)
+* [Storage drivers](#storage-drivers)
 * [Events](#events)
+
+## Storage drivers
+
+The package uses Laravel's session storage by default. Set the storage driver
+to `database` when carts must survive session expiration or be available to
+other application processes.
+
+### Database storage
+
+Publish the package configuration if it has not already been published:
+
+```bash
+php artisan vendor:publish --provider="Lenius\LaravelEcommerce\EcommerceServiceProvider" --tag="config"
+```
+
+If the application already contains a previously published
+`config/ecommerce.php`, add the new storage, database, and cookie settings
+manually or republish the file after backing up local changes.
+
+Select the database driver in `.env`:
+
+```dotenv
+ECOMMERCE_STORAGE=database
+```
+
+The package migration is registered only when the database storage driver is
+selected. Set `ECOMMERCE_STORAGE=database` before running the normal
+application migrations to create the `ecommerce_carts` table:
+
+```bash
+php artisan migrate
+```
+
+Applications that keep the default session driver do not register this
+migration, so `php artisan migrate` will not add an unused cart table. When
+changing an existing application from session to database storage, update the
+environment (and rebuild Laravel's config cache when used) before migrating:
+
+```bash
+php artisan config:cache
+php artisan migrate
+```
+
+Every cart is stored in one row. The `items` column contains the complete cart
+as JSON, while `identifier` contains the UUID from the cart cookie. Item data
+must therefore be JSON serializable. The table also contains an optional
+authenticated `user_id`, expiration timestamp, and an internal `version`
+number used to detect concurrent updates.
+
+The database driver uses Laravel's standard `database.default` connection. Set
+`ECOMMERCE_DB_CONNECTION` only when carts should use another configured
+connection. The table name, cart expiration, and cookie lifetime can also be
+configured through environment variables:
+
+```dotenv
+ECOMMERCE_STORAGE=database
+ECOMMERCE_DB_CONNECTION=mysql
+ECOMMERCE_DB_TABLE=ecommerce_carts
+ECOMMERCE_CART_EXPIRATION=43200
+ECOMMERCE_CART_CONFLICT_RETRIES=3
+ECOMMERCE_COOKIE_MINUTES=43200
+ECOMMERCE_CART_PRUNE_DAYS=30
+ECOMMERCE_CART_PRUNE_CRON="0 3 * * *"
+```
+
+The expiration values are measured in minutes; `43200` is 30 days. Set cart
+expiration to `0` to store no expiration timestamp. The expiration timestamp
+is refreshed when the cart changes. A read-only load refreshes it only after
+at least half of the configured lifetime has passed, avoiding a database write
+on every page view. The cookie lifetime should normally be at least as long as
+the database cart lifetime so a guest can find the same cart again.
+
+When an authenticated user accesses a database cart, the current user ID is
+stored on the row. This iteration does not automatically merge multiple carts
+belonging to the same user.
+
+Database writes use optimistic locking. If another request changes the same
+cart, the driver reloads the latest row and retries the requested mutation up
+to three times by default. Configure the limit with
+`ECOMMERCE_CART_CONFLICT_RETRIES`. If all attempts conflict, the driver throws
+`Lenius\LaravelEcommerce\Exceptions\CartConflictException`, which Laravel
+renders as an HTTP 409 Conflict response.
+
+### Pruning expired carts
+
+Expired carts are not deleted automatically as soon as they expire, so that,
+for example, an abandoned-cart follow-up job can still read the `user_id`
+stamped on an expired row. The package registers an `ecommerce:prune-carts`
+Artisan command on the application's schedule to permanently delete carts
+whose `expires_at` lies more than `ECOMMERCE_CART_PRUNE_DAYS` (default `30`)
+days in the past. Rows with no expiration (`ECOMMERCE_CART_EXPIRATION=0`) are
+never pruned.
+
+```dotenv
+ECOMMERCE_CART_PRUNE_DAYS=30
+ECOMMERCE_CART_PRUNE_CRON="0 3 * * *"
+ECOMMERCE_CART_PRUNE_CHUNK_SIZE=500
+```
+
+Set `ECOMMERCE_CART_PRUNE_DAYS=0` to disable pruning entirely; the command
+is then also removed from the schedule. `ECOMMERCE_CART_PRUNE_CRON` accepts
+any standard cron expression and defaults to once a day at 03:00. Rows are
+deleted in batches of `ECOMMERCE_CART_PRUNE_CHUNK_SIZE` (default `500`)
+rather than a single unbounded `DELETE`, so a large backlog does not hold a
+long-running lock against the table. The schedule entry uses
+`onOneServer()` and `withoutOverlapping()`, so it is safe to run on every
+node of a multi-server deployment and won't stack runs if one takes longer
+than expected. Pruning can also be run manually or from your own scheduler:
+
+```bash
+php artisan ecommerce:prune-carts
+```
+
+This relies on Laravel's own scheduler, so the host application must have
+its usual single cron entry configured, e.g.:
+
+```cron
+* * * * * cd /path/to/app && php artisan schedule:run >> /dev/null 2>&1
+```
+
+Without that entry, the prune command is registered but will never run.
+
+### Custom cart items
+
+The default database item factory restores JSON data as
+`Lenius\Basket\Item`. Applications that insert a custom `ItemInterface` with
+overridden behavior should provide their own factory so the same class is used
+after the next request:
+
+```php
+namespace App\Basket;
+
+use App\BasketItem;
+use Lenius\Basket\ItemInterface;
+use Lenius\LaravelEcommerce\Contracts\ItemFactoryInterface;
+
+class BasketItemFactory implements ItemFactoryInterface
+{
+    public function create(array $data, string $identifier): ItemInterface
+    {
+        $item = new BasketItem($data);
+        $item->setIdentifier($identifier);
+
+        return $item;
+    }
+}
+```
+
+Bind the factory in the application's service provider:
+
+```php
+use App\Basket\BasketItemFactory;
+use Lenius\LaravelEcommerce\Contracts\ItemFactoryInterface;
+
+public function register(): void
+{
+    $this->app->bind(
+        ItemFactoryInterface::class,
+        BasketItemFactory::class,
+    );
+}
+```
+
+Applications using the standard `Lenius\Basket\Item` do not need a custom
+binding.
 
 ## Usage
 
@@ -99,12 +265,13 @@ Cart::insert(new Item([
 ```
 
 ### Updating items in the cart
-You can update items in your cart by updating any property on a cart item. For example, if you were within a
-cart loop then you can update a specific item using the below example.
+Use `Cart::update()` so the selected storage driver persists the change. For
+example, when iterating over the cart contents:
+
 ```php
 foreach (Cart::contents() as $item) {
-    $item->name = 'Foo';
-    $item->setQuantity(1);
+    Cart::update($item->identifier, 'name', 'Foo');
+    Cart::update($item->identifier, 'quantity', 1);
 }
 ```
 

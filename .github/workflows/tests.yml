@@ -12,6 +12,8 @@ on:
 jobs:
     run-tests:
         runs-on: ${{ matrix.os }}
+        env:
+            DB_DRIVER: sqlite
         strategy:
             fail-fast: false
             matrix:
@@ -25,7 +27,7 @@ jobs:
                     testbench: 10.*
                   - laravel: 13.*
                     testbench: 11.*
-        name: P${{ matrix.php }} - L${{ matrix.laravel }}
+        name: P${{ matrix.php }} - L${{ matrix.laravel }} - Session + SQLite
 
         steps:
 
@@ -44,10 +46,20 @@ jobs:
                 echo "::add-matcher::${{ runner.tool_cache }}/php.json"
                 echo "::add-matcher::${{ runner.tool_cache }}/phpunit.json"
 
+            - name: Verify SQLite
+              run: php -r "new PDO('sqlite::memory:');"
+
             - name: Install dependencies
               run: |
                   composer require "laravel/framework:${{ matrix.laravel }}" "orchestra/testbench:${{ matrix.testbench }}" --no-interaction --no-update
                   composer update --prefer-stable --prefer-dist --no-interaction
 
-            - name: Execute tests
-              run: vendor/bin/phpunit
+            - name: Execute tests with session storage
+              env:
+                  ECOMMERCE_STORAGE: session
+              run: vendor/bin/phpunit tests/CartTest.php tests/FeatureTest.php
+
+            - name: Execute tests with database storage on SQLite
+              env:
+                  ECOMMERCE_STORAGE: database
+              run: vendor/bin/phpunit tests/DatabaseStorageTest.php tests/FeatureTest.php
