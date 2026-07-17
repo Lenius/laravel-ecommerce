@@ -14,15 +14,14 @@ class FeatureTest extends TestCase
         $this->loadRoutes();
     }
 
-    public function test_database_migration_is_only_loaded_for_database_storage(): void
+    public function test_database_migration_is_always_loaded(): void
     {
-        $usesDatabaseStorage = config('ecommerce.storage', 'session') === 'database';
         $hasDatabaseCartTable = $this->app['db']
             ->connection()
             ->getSchemaBuilder()
             ->hasTable('ecommerce_carts');
 
-        $this->assertSame($usesDatabaseStorage, $hasDatabaseCartTable);
+        $this->assertTrue($hasDatabaseCartTable);
     }
 
     public function test_login_and_logout_rotate_the_cart_identifier_cookie(): void

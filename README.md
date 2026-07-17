@@ -56,23 +56,17 @@ Select the database driver in `.env`:
 ECOMMERCE_STORAGE=database
 ```
 
-The package migration is registered only when the database storage driver is
-selected. Set `ECOMMERCE_STORAGE=database` before running the normal
-application migrations to create the `ecommerce_carts` table:
+The package migration is always registered, regardless of the selected storage
+driver. Run the normal application migrations to create the
+`ecommerce_carts` table:
 
 ```bash
 php artisan migrate
 ```
 
-Applications that keep the default session driver do not register this
-migration, so `php artisan migrate` will not add an unused cart table. When
-changing an existing application from session to database storage, update the
-environment (and rebuild Laravel's config cache when used) before migrating:
-
-```bash
-php artisan config:cache
-php artisan migrate
-```
+This means applications that keep the default session driver also get the cart
+table when `php artisan migrate` is run. The table remains unused until the
+database storage driver is selected.
 
 Every cart is stored in one row. The `items` column contains the complete cart
 as JSON, while `identifier` contains the UUID from the cart cookie. Item data
