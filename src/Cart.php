@@ -5,7 +5,6 @@ namespace Lenius\LaravelEcommerce;
 use Illuminate\Contracts\Events\Dispatcher;
 use Lenius\Basket\Basket;
 use Lenius\Basket\IdentifierInterface;
-use Lenius\Basket\Item;
 use Lenius\Basket\ItemInterface;
 use Lenius\Basket\StorageInterface;
 use Lenius\LaravelEcommerce\Events\CartDestroyed;

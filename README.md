@@ -9,6 +9,8 @@
 
 ## Installation
 
+This package supports Laravel 11 through 13 and PHP 8.3 through 8.5.
+
 You can install this package via composer using:
 
 ```bash
@@ -155,15 +157,162 @@ The cart also has events build in. There are five events available for you to li
 | CartItemIncremented | When an item is inc from the cart.     | The `CartItem` that was incremented. |
 | CartDestroyed       | When the cart was destroyed.           | -                                    |
 
-## Testing
+## Containerized development
 
-Run the tests with:
+The `./app` helper runs the development tools in a single PHP CLI container.
+It does not start a web server, database, or other services. The image contains
+PHP, Composer, Git, unzip, and the PHP extensions required by Laravel, PHPUnit,
+and the package dependencies.
 
-``` bash
-composer psalm
-composer stan
+Docker with Linux container support is required. Use `./app` from Bash or
+`app.ps1` directly from Windows PowerShell. Make the Bash helper executable
+after cloning if necessary:
+
+```bash
+chmod +x app
+```
+
+### Windows quick start
+
+Install and start Docker Desktop and make sure it is using Linux containers.
+Then open PowerShell in the project directory. On a fresh clone, build the test
+container, install the Composer dependencies, and run all checks:
+
+```powershell
+Set-Location C:\path\to\laravel-ecommerce
+.\app.ps1 build
+.\app.ps1 composer-install
+.\app.ps1 check
+```
+
+The build creates the local image `laravel-ecommerce-dev:php-8.5`. The
+`check` command runs strict Composer validation, PHPUnit, and PHPStan. Source
+files and the `vendor` directory are shared between Windows and the container
+through the project mount.
+
+An explicit build is optional after the initial dependency installation. If an
+image is missing, commands such as `.\app.ps1 check` build it automatically.
+
+To rebuild the image from the latest base image without using Docker's build
+cache, run:
+
+```powershell
+.\app.ps1 build --force
+```
+
+Build and test with another supported PHP version by placing `--php` before the
+command. Every PHP version uses a separate Docker image:
+
+```powershell
+.\app.ps1 --php 8.4 build
+.\app.ps1 --php 8.4 composer-update
+.\app.ps1 --php 8.4 check
+```
+
+PHP 8.5 is the default, so `--php 8.5` can normally be omitted. Run
+`composer-update` after changing PHP versions if the existing dependencies were
+resolved on a different PHP version.
+
+If the Windows execution policy blocks local scripts, either allow scripts for
+the current PowerShell process:
+
+```powershell
+Set-ExecutionPolicy -Scope Process Bypass
+.\app.ps1 check
+```
+
+or start the script with a process-scoped bypass without changing the machine
+policy:
+
+```powershell
+powershell -NoProfile -ExecutionPolicy Bypass -File .\app.ps1 check
+```
+
+### Bash quick start
+
+On Linux, macOS, or in WSL, the equivalent fresh-clone workflow is:
+
+```bash
+./app build
+./app composer-install
+./app check
+```
+
+The default image is built automatically when it is missing. Force a clean
+rebuild with:
+
+```bash
+./app build --force
+```
+
+Use PHP 8.4 explicitly with:
+
+```bash
+./app --php 8.4 build
+./app --php 8.4 composer-update
+./app --php 8.4 check
+```
+
+The project is mounted at `/app`, so source changes and Composer changes are
+written directly to the working tree. Composer's download cache is persisted
+in `~/.cache/composer` on the host.
+
+### Available commands
+
+| Command | Description |
+|---|---|
+| `./app build [--force]` | Build or rebuild the PHP tool image. |
+| `./app check` | Run Composer validation, PHPUnit, and PHPStan. |
+| `./app test [arguments]` | Run PHPUnit and forward optional arguments. |
+| `./app stan [arguments]` | Run PHPStan and forward optional arguments. |
+| `./app php-cs-fixer [arguments]` | Run PHP CS Fixer and apply fixes. |
+| `./app composer-install [arguments]` | Install Composer dependencies. |
+| `./app composer-update [arguments]` | Update Composer dependencies. |
+| `./app composer-validate [arguments]` | Validate `composer.json` strictly. |
+| `./app composer-outdated [arguments]` | List outdated Composer dependencies. |
+| `./app composer [arguments]` | Run any Composer command. |
+| `./app php [arguments]` | Run any PHP command. |
+| `./app php-shell` | Open an interactive Bash shell in the PHP container. |
+| `./app help` | Display the command overview. |
+
+Arguments are forwarded to the underlying tool. For example:
+
+```bash
+./app test --filter CartTest
+./app php -v
+./app composer show --direct
+./app composer check-platform-reqs
+```
+
+The PowerShell helper accepts the same commands and arguments. Replace `./app`
+with `.\app.ps1`:
+
+```powershell
+.\app.ps1 test --filter CartTest
+.\app.ps1 php -v
+.\app.ps1 composer check-platform-reqs
+```
+
+Select another supported PHP version with `--php`. Each version gets its own
+local Docker image:
+
+```bash
+./app --php 8.4 build
+./app --php 8.4 composer-update
+./app --php 8.4 test
+```
+
+The equivalent PowerShell syntax is `.\app.ps1 --php 8.4 test`.
+
+### Running without Docker
+
+The equivalent local Composer commands are:
+
+```bash
+composer validate --strict
 composer test
-composer test-coverage
+composer analyse
+composer fix
 ```
 
 ## Contributing

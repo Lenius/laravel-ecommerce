@@ -1,6 +1,6 @@
 {
     "name": "lenius/laravel-ecommerce",
-    "description": "Shopping basket package for laravel 10 & 11",
+    "description": "Shopping basket package for Laravel",
     "homepage": "https://github.com/Lenius/laravel-ecommerce",
     "keywords": ["laravel", "framework", "Laravel-Basket", "Laravel Basket", "e-commerce", "lenius"],
     "license": "MIT",
@@ -11,18 +11,18 @@
         }
     ],
     "require": {
-        "php": "^8.0",
-        "illuminate/auth": "^8.0|^9.0|^10|^11|^12.0",
-        "illuminate/container": "^8.0|^9.0|^10|^11|^12.0",
-        "illuminate/contracts": "^8.0|^9.0|^10|^11|^12.0",
-        "illuminate/database": "^8.0|^9.0|^10|^11|^12.0",
+        "php": "^8.3",
+        "illuminate/auth": "^11.0|^12.0|^13.0",
+        "illuminate/container": "^11.0|^12.0|^13.0",
+        "illuminate/contracts": "^11.0|^12.0|^13.0",
+        "illuminate/database": "^11.0|^12.0|^13.0",
         "lenius/basket": "^5.0"
     },
     "require-dev": {
         "friendsofphp/php-cs-fixer": "^3.4",
-        "larastan/larastan": "^2.7|^3.0",
-        "orchestra/testbench": "^6.0|^7.0|^8.0|^9.0|^10.0",
-        "phpunit/phpunit": "^9.4|^10.1|^11.5"
+        "larastan/larastan": "^2.11|^3.10",
+        "orchestra/testbench": "^9.0|^10.0|^11.0",
+        "phpunit/phpunit": "^10.5|^11.5|^12.5|^13.0"
     },
     "config": {
         "sort-packages": true

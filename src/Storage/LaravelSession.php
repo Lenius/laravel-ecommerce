@@ -9,13 +9,32 @@ use Lenius\Basket\StorageInterface;
 
 class LaravelSession extends Runtime implements StorageInterface
 {
+    /** @var array<string, array<string, ItemInterface>> */
+    protected static array $cart = [];
+
     public function restore(): void
     {
-        $carts = Session::get('cart');
+        $carts = Session::get('cart', []);
 
-        if (! empty($carts)) {
-            static::$cart = (array) $carts;
+        if (! is_array($carts)) {
+            return;
         }
+
+        $restoredCarts = [];
+
+        foreach ($carts as $cartIdentifier => $items) {
+            if (! is_string($cartIdentifier) || ! is_array($items)) {
+                continue;
+            }
+
+            foreach ($items as $itemIdentifier => $item) {
+                if (is_string($itemIdentifier) && $item instanceof ItemInterface) {
+                    $restoredCarts[$cartIdentifier][$itemIdentifier] = $item;
+                }
+            }
+        }
+
+        static::$cart = $restoredCarts;
     }
 
     /**
@@ -35,7 +54,7 @@ class LaravelSession extends Runtime implements StorageInterface
      *
      * @param bool $asArray
      *
-     * @return array
+     * @return array<string, ItemInterface|array<array-key, mixed>>
      */
     public function &data(bool $asArray = false): array
     {
@@ -45,10 +64,10 @@ class LaravelSession extends Runtime implements StorageInterface
             return $cart;
         }
 
-        $data = $cart;
+        $data = [];
 
-        foreach ($data as &$item) {
-            $item = $item->toArray();
+        foreach ($cart as $identifier => $item) {
+            $data[$identifier] = $item->toArray();
         }
 
         return $data;
@@ -115,9 +134,9 @@ class LaravelSession extends Runtime implements StorageInterface
     /**
      * Remove an item from the cart.
      *
-     * @param mixed $id
+     * @param string $id
      */
-    public function remove($id): void
+    public function remove(string $id): void
     {
         unset(static::$cart[$this->id][$id]);
 
