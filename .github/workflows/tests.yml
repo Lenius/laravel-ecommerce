@@ -57,9 +57,76 @@ jobs:
             - name: Execute tests with session storage
               env:
                   ECOMMERCE_STORAGE: session
-              run: vendor/bin/phpunit tests/CartTest.php tests/FeatureTest.php
+              run: vendor/bin/phpunit tests/CartTest.php tests/FeatureTest.php tests/SessionStorageTest.php
 
             - name: Execute tests with database storage on SQLite
+              env:
+                  ECOMMERCE_STORAGE: database
+              run: vendor/bin/phpunit tests/DatabaseStorageTest.php tests/FeatureTest.php
+
+    postgres:
+        name: Tests (PostgreSQL + real migrations)
+        runs-on: ubuntu-latest
+
+        services:
+            postgres:
+                image: postgres:16
+                env:
+                    POSTGRES_DB: testing
+                    POSTGRES_USER: postgres
+                    POSTGRES_PASSWORD: password
+                ports:
+                    - 5432:5432
+                options: >-
+                    --health-cmd="pg_isready -U postgres -d testing"
+                    --health-interval=5s
+                    --health-timeout=5s
+                    --health-retries=10
+
+        env:
+            DB_DRIVER: pgsql
+            DB_HOST: 127.0.0.1
+            DB_PORT: 5432
+            DB_DATABASE: testing
+            DB_USERNAME: postgres
+            DB_PASSWORD: password
+
+        steps:
+
+            - name: Checkout code
+              uses: actions/checkout@v7
+
+            - name: Setup PHP
+              uses: shivammathur/setup-php@v2
+              with:
+                  php-version: '8.4'
+                  extensions: dom, curl, libxml, mbstring, zip, pcntl, pdo, pdo_pgsql, bcmath, soap, intl, exif
+                  coverage: none
+
+            - name: Setup problem matchers
+              run: |
+                echo "::add-matcher::${{ runner.tool_cache }}/php.json"
+                echo "::add-matcher::${{ runner.tool_cache }}/phpunit.json"
+
+            - name: Install dependencies
+              run: composer update --prefer-stable --prefer-dist --no-interaction
+
+            - name: Wait for Postgres
+              run: |
+                for i in {1..30}; do
+                  pg_isready -h 127.0.0.1 -p 5432 -U postgres -d testing && exit 0
+                  echo "Waiting for postgres..."
+                  sleep 1
+                done
+                echo "Postgres did not become ready in time" >&2
+                exit 1
+
+            - name: Execute tests with session storage
+              env:
+                  ECOMMERCE_STORAGE: session
+              run: vendor/bin/phpunit tests/CartTest.php tests/FeatureTest.php tests/SessionStorageTest.php
+
+            - name: Execute tests with database storage on PostgreSQL
               env:
                   ECOMMERCE_STORAGE: database
               run: vendor/bin/phpunit tests/DatabaseStorageTest.php tests/FeatureTest.php

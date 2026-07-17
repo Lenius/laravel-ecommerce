@@ -69,20 +69,20 @@ abstract class TestCase extends Orchestra
 
         $app['config']->set('database.connections.pgsql', [
             'driver'   => 'pgsql',
-            'host' => '127.0.0.1',
-            'port' => '54320',
-            'username' => 'postgres',
-            'password' => 'mysecretpassword',
-            'database' => 'test',
+            'host' => env('DB_HOST', '127.0.0.1'),
+            'port' => env('DB_PORT', '54320'),
+            'username' => env('DB_USERNAME', 'postgres'),
+            'password' => env('DB_PASSWORD', 'mysecretpassword'),
+            'database' => env('DB_DATABASE', 'test'),
         ]);
 
         $app['config']->set('database.connections.mysql', [
             'driver'   => 'mysql',
-            'host' => '127.0.0.1',
-            'port' => '3306',
-            'username' => 'root',
-            'password' => '',
-            'database' => 'test',
+            'host' => env('DB_HOST', '127.0.0.1'),
+            'port' => env('DB_PORT', '3306'),
+            'username' => env('DB_USERNAME', 'root'),
+            'password' => env('DB_PASSWORD', ''),
+            'database' => env('DB_DATABASE', 'test'),
         ]);
 
         $app['config']->set('database.default', 'sqlite');
@@ -104,6 +104,7 @@ abstract class TestCase extends Orchestra
         if ($app['config']->get('database.default') !== 'sqlite') {
             $app['db']->connection()->getSchemaBuilder()->dropIfExists('users');
             $app['db']->connection()->getSchemaBuilder()->dropIfExists('migrations');
+            $app['db']->connection()->getSchemaBuilder()->dropIfExists('ecommerce_carts');
         }
 
         $this->artisan('migrate');

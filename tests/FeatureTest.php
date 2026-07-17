@@ -4,26 +4,9 @@ namespace Lenius\LaravelEcommerce\Test;
 
 use Illuminate\Auth\Events\Login;
 use Illuminate\Auth\Events\Logout;
-use Illuminate\Console\Scheduling\Schedule;
 
 class FeatureTest extends TestCase
 {
-    public function test_prune_command_is_a_noop_for_session_storage(): void
-    {
-        $this->artisan('ecommerce:prune-carts')->assertExitCode(0);
-    }
-
-    public function test_the_prune_command_is_not_scheduled_for_session_storage(): void
-    {
-        $schedule = $this->app->make(Schedule::class);
-
-        $scheduled = collect($schedule->events())->contains(
-            fn ($event) => is_string($event->command ?? null) && str_contains($event->command, 'ecommerce:prune-carts'),
-        );
-
-        $this->assertFalse($scheduled, 'Did not expect the prune command to be scheduled without database storage.');
-    }
-
     public function setUp(): void
     {
         parent::setUp();
