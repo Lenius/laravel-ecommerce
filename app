@@ -114,7 +114,7 @@ function runTests() {
 
 function runStan() {
     ensureDependencies
-    runContainer php vendor/bin/phpstan analyse --no-progress "$@"
+    runContainer php vendor/bin/phpstan analyse --no-progress --memory-limit=512M "$@"
 }
 
 function runCodeStyleFixer() {

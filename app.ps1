@@ -156,7 +156,9 @@ function Invoke-Stan {
     param([string[]] $ToolArguments = @())
 
     Confirm-Dependencies
-    Invoke-Container -ContainerArguments (@('php', 'vendor/bin/phpstan', 'analyse', '--no-progress') + $ToolArguments)
+    Invoke-Container -ContainerArguments (@(
+        'php', 'vendor/bin/phpstan', 'analyse', '--no-progress', '--memory-limit=512M'
+    ) + $ToolArguments)
 }
 
 function Invoke-CodeStyleFixer {
@@ -185,13 +187,25 @@ switch ($Command) {
         Invoke-Checks
     }
     'test' {
-        Invoke-Tests -ToolArguments $CommandArguments
+        if (@($CommandArguments).Count -gt 0) {
+            Invoke-Tests -ToolArguments $CommandArguments
+        } else {
+            Invoke-Tests
+        }
     }
     'stan' {
-        Invoke-Stan -ToolArguments $CommandArguments
+        if (@($CommandArguments).Count -gt 0) {
+            Invoke-Stan -ToolArguments $CommandArguments
+        } else {
+            Invoke-Stan
+        }
     }
     'php-cs-fixer' {
-        Invoke-CodeStyleFixer -ToolArguments $CommandArguments
+        if (@($CommandArguments).Count -gt 0) {
+            Invoke-CodeStyleFixer -ToolArguments $CommandArguments
+        } else {
+            Invoke-CodeStyleFixer
+        }
     }
     'composer-install' {
         Invoke-Container -ContainerArguments (@(

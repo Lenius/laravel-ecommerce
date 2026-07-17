@@ -83,7 +83,7 @@ class EcommerceController extends Controller
             foreach ($items as $itemIdentifier => $quantity) {
                 if ($item = Cart::item($itemIdentifier)) {
                     if ($quantity > 0) {
-                        $item->quantity = (int) $quantity;
+                        Cart::update($itemIdentifier, 'quantity', (int) $quantity);
                     } else {
                         Cart::remove($itemIdentifier);
                     }

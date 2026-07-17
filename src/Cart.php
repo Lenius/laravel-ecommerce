@@ -42,6 +42,7 @@ class Cart extends Basket
         foreach ($this->contents() as $item) {
             if ($item->identifier == $itemIdentifier) {
                 $item->update($key, $value);
+                $this->store->insertUpdate($item);
                 $this->events->dispatch(new CartItemUpdated($item));
 
                 break;
@@ -83,6 +84,7 @@ class Cart extends Basket
         if ($item = Cart::item($itemIdentifier)) {
             /** @var ItemInterface $item */
             $item->setQuantity($item->getQuantity() + 1);
+            $this->store->insertUpdate($item);
             $this->events->dispatch(new CartItemIncremented($item));
 
             return $item;
@@ -104,12 +106,13 @@ class Cart extends Basket
             /** @var ItemInterface $item */
             if ($item->getQuantity() > 1) {
                 $item->setQuantity($item->getQuantity() - 1);
+                $this->store->insertUpdate($item);
                 $this->events->dispatch(new CartItemDecreased($item));
 
                 return $item;
             } else {
                 $this->events->dispatch(new CartItemRemoved($item));
-                Cart::remove($itemIdentifier);
+                $this->store->remove($itemIdentifier);
             }
         }
 

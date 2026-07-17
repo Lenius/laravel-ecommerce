@@ -13,6 +13,7 @@ use Lenius\Basket\ItemInterface;
  * @method static float total(bool $includeTax = true)
  * @method static float tax()
  * @method static ItemInterface|false item(string $itemIdentifier)
+ * @method static void update(string $itemIdentifier, mixed $key, mixed $value = null)
  * @method static void remove(string $itemIdentifier)
  * @method static float weight()
  * @method static void destroy()

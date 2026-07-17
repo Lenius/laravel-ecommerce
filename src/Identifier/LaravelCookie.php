@@ -18,8 +18,10 @@ class LaravelCookie implements IdentifierInterface
      */
     public function get(): string
     {
-        if (request()->hasCookie('cart_identifier')) {
-            $cookie = request()->cookie('cart_identifier');
+        $name = $this->name();
+
+        if (request()->hasCookie($name)) {
+            $cookie = request()->cookie($name);
 
             if (is_string($cookie) && ! empty($cookie)) {
                 return $cookie;
@@ -38,7 +40,12 @@ class LaravelCookie implements IdentifierInterface
     {
         $identifier = (string) Str::uuid();
 
-        Cookie::queue(cookie('cart_identifier', $identifier, 0, '/'));
+        Cookie::queue(cookie(
+            $this->name(),
+            $identifier,
+            $this->minutes(),
+            $this->path(),
+        ));
 
         return $identifier;
     }
@@ -50,6 +57,27 @@ class LaravelCookie implements IdentifierInterface
      */
     public function forget(): void
     {
-        Cookie::queue(Cookie::forget('cart_identifier'));
+        Cookie::queue(Cookie::forget($this->name(), $this->path()));
+    }
+
+    private function name(): string
+    {
+        $name = config('ecommerce.cookie.name', 'cart_identifier');
+
+        return is_string($name) && $name !== '' ? $name : 'cart_identifier';
+    }
+
+    private function minutes(): int
+    {
+        $minutes = config('ecommerce.cookie.minutes', 43200);
+
+        return is_numeric($minutes) ? (int) $minutes : 43200;
+    }
+
+    private function path(): string
+    {
+        $path = config('ecommerce.cookie.path', '/');
+
+        return is_string($path) && $path !== '' ? $path : '/';
     }
 }
