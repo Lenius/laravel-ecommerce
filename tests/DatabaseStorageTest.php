@@ -24,6 +24,54 @@ class DatabaseStorageTest extends TestCase
         $app['config']->set('ecommerce.storage', 'database');
     }
 
+    public function test_a_read_only_request_without_a_cart_cookie_does_not_create_a_database_row(): void
+    {
+        $this->get(route('ecommerce.cart.debug'))
+            ->assertOk()
+            ->assertJson([
+                'items' => [],
+                'sum' => 0,
+                'tax' => 0,
+                'total' => 0,
+                'weight' => 0,
+                'total_items' => 0,
+            ]);
+
+        $this->assertSame(0, $this->app['db']->table('ecommerce_carts')->count());
+    }
+
+    public function test_the_first_item_creates_exactly_one_database_row_with_the_item(): void
+    {
+        $identifier = '00000000-0000-4000-8000-000000000010';
+        $storage = $this->storage();
+        $storage->setIdentifier($identifier);
+
+        $this->assertSame(0, $this->app['db']->table('ecommerce_carts')->count());
+
+        $item = $this->item('product-a');
+        $item->setIdentifier('item-a');
+        $storage->insertUpdate($item);
+
+        $row = $this->app['db']->table('ecommerce_carts')->where('identifier', $identifier)->first();
+
+        $this->assertNotNull($row);
+        $this->assertSame(1, $this->app['db']->table('ecommerce_carts')->count());
+        $this->assertSame(1, (int) $row->version);
+        $this->assertArrayHasKey('item-a', json_decode($row->items, true, flags: JSON_THROW_ON_ERROR));
+    }
+
+    public function test_destroying_a_non_persisted_cart_does_not_create_a_database_row(): void
+    {
+        $storage = $this->storage();
+        $storage->setIdentifier('00000000-0000-4000-8000-000000000011');
+
+        $storage->destroy();
+        $storage->remove('missing-item');
+
+        $this->assertSame([], $storage->data());
+        $this->assertSame(0, $this->app['db']->table('ecommerce_carts')->count());
+    }
+
     public function test_it_persists_and_restores_a_cart(): void
     {
         $storage = $this->storage();
@@ -41,7 +89,7 @@ class DatabaseStorageTest extends TestCase
         $this->assertSame(2, $restored->item('item-a')->getQuantity());
         $this->assertSame('product-a', $restored->find('product-a')->id);
         $this->assertSame('Large', $restored->data(true)['item-a']['options']['size']);
-        $this->assertSame(2, $this->app['db']->table('ecommerce_carts')->value('version'));
+        $this->assertSame(1, $this->app['db']->table('ecommerce_carts')->value('version'));
     }
 
     public function test_it_can_restore_a_custom_item_with_an_item_factory(): void
@@ -92,7 +140,7 @@ class DatabaseStorageTest extends TestCase
         $this->assertSame(2, $this->app['db']->table('ecommerce_carts')->count());
     }
 
-    public function test_it_reloads_and_retries_after_a_version_conflict(): void
+    public function test_concurrent_first_writes_reload_and_retry_without_losing_items_or_creating_duplicates(): void
     {
         $identifier = '00000000-0000-4000-8000-000000000004';
         $first = $this->storage();
@@ -114,6 +162,38 @@ class DatabaseStorageTest extends TestCase
 
         $this->assertTrue($restored->has('item-a'));
         $this->assertTrue($restored->has('item-b'));
+        $this->assertSame(1, $this->app['db']->table('ecommerce_carts')->count());
+        $this->assertSame(2, $this->app['db']->table('ecommerce_carts')->value('version'));
+    }
+
+    public function test_it_reloads_and_retries_after_an_existing_cart_version_conflict(): void
+    {
+        $identifier = '00000000-0000-4000-8000-000000000013';
+        $seed = $this->storage();
+        $seed->setIdentifier($identifier);
+        $seedItem = $this->item('product-a');
+        $seedItem->setIdentifier('item-a');
+        $seed->insertUpdate($seedItem);
+
+        $first = $this->storage();
+        $second = $this->storage();
+        $first->setIdentifier($identifier);
+        $second->setIdentifier($identifier);
+
+        $firstItem = $this->item('product-b');
+        $firstItem->setIdentifier('item-b');
+        $first->insertUpdate($firstItem);
+
+        $secondItem = $this->item('product-c');
+        $secondItem->setIdentifier('item-c');
+        $second->insertUpdate($secondItem);
+
+        $restored = $this->storage();
+        $restored->setIdentifier($identifier);
+
+        $this->assertTrue($restored->has('item-a'));
+        $this->assertTrue($restored->has('item-b'));
+        $this->assertTrue($restored->has('item-c'));
         $this->assertSame(3, $this->app['db']->table('ecommerce_carts')->value('version'));
     }
 
@@ -125,6 +205,9 @@ class DatabaseStorageTest extends TestCase
             $identifier = '00000000-0000-4000-8000-000000000007';
             $storage = new LaravelDatabase($this->app['db'], expirationMinutes: 100);
             $storage->setIdentifier($identifier);
+            $item = $this->item('product-a');
+            $item->setIdentifier('item-a');
+            $storage->insertUpdate($item);
 
             $before = $this->app['db']->table('ecommerce_carts')->where('identifier', $identifier)->first();
 
@@ -152,6 +235,9 @@ class DatabaseStorageTest extends TestCase
             $identifier = '00000000-0000-4000-8000-000000000008';
             $storage = new LaravelDatabase($this->app['db'], expirationMinutes: 100);
             $storage->setIdentifier($identifier);
+            $item = $this->item('product-a');
+            $item->setIdentifier('item-a');
+            $storage->insertUpdate($item);
 
             CarbonImmutable::setTestNow('2026-01-01 12:51:00');
             $restored = new LaravelDatabase($this->app['db'], expirationMinutes: 100);
@@ -166,6 +252,28 @@ class DatabaseStorageTest extends TestCase
         } finally {
             CarbonImmutable::setTestNow();
         }
+    }
+
+    public function test_an_existing_guest_cart_is_loaded_and_assigned_to_the_authenticated_user(): void
+    {
+        $identifier = '00000000-0000-4000-8000-000000000012';
+        $guest = $this->storage();
+        $guest->setIdentifier($identifier);
+        $item = $this->item('product-a');
+        $item->setIdentifier('item-a');
+        $guest->insertUpdate($item);
+
+        $authenticated = new LaravelDatabase(
+            database: $this->app['db'],
+            userIdentifierResolver: fn () => '1',
+        );
+        $authenticated->setIdentifier($identifier);
+
+        $this->assertTrue($authenticated->has('item-a'));
+        $this->assertSame(
+            '1',
+            $this->app['db']->table('ecommerce_carts')->where('identifier', $identifier)->value('user_id'),
+        );
     }
 
     public function test_a_stale_identifier_cannot_read_or_reassign_another_users_cart(): void
@@ -323,7 +431,7 @@ class DatabaseStorageTest extends TestCase
         $this->assertInstanceOf(ItemInterface::class, $item);
         $this->assertSame(1, $item->getQuantity());
         $this->assertSame('Updated product', $item->name);
-        $this->assertSame(5, $this->app['db']->table('ecommerce_carts')->value('version'));
+        $this->assertSame(4, $this->app['db']->table('ecommerce_carts')->value('version'));
     }
 
     public function test_the_service_provider_can_select_the_database_driver(): void
@@ -340,7 +448,7 @@ class DatabaseStorageTest extends TestCase
 
         $this->assertNotNull($storedCart);
         $this->assertSame('1', $storedCart->user_id);
-        $this->assertSame(2, (int) $storedCart->version);
+        $this->assertSame(1, (int) $storedCart->version);
     }
 
     private function storage(): LaravelDatabase

@@ -115,6 +115,12 @@ class LaravelDatabase implements StorageInterface
 
     public function remove(string $id): void
     {
+        if ($this->cartId === null) {
+            unset($this->cart[$id]);
+
+            return;
+        }
+
         $this->mutateAndPersist(function () use ($id): void {
             unset($this->cart[$id]);
         });
@@ -122,6 +128,12 @@ class LaravelDatabase implements StorageInterface
 
     public function destroy(): void
     {
+        if ($this->cartId === null) {
+            $this->cart = [];
+
+            return;
+        }
+
         $this->mutateAndPersist(function (): void {
             $this->cart = [];
         });
@@ -130,7 +142,7 @@ class LaravelDatabase implements StorageInterface
     public function setIdentifier(string $identifier): void
     {
         $this->id = $identifier;
-        $this->loadOrCreateCart();
+        $this->loadCart();
     }
 
     public function getIdentifier(): string
@@ -142,7 +154,7 @@ class LaravelDatabase implements StorageInterface
     {
         for ($attempt = 0; $attempt <= $this->conflictRetries; $attempt++) {
             if ($attempt > 0) {
-                $this->loadOrCreateCart();
+                $this->loadCart();
             }
 
             $mutation();
@@ -158,13 +170,13 @@ class LaravelDatabase implements StorageInterface
     private function persist(): bool
     {
         if ($this->cartId === null) {
-            throw new RuntimeException('A cart identifier must be set before saving the cart.');
+            return $this->insertCart();
         }
 
         $nextVersion = $this->version + 1;
         $attributes = [
-            'items' => $this->encodeItems(),
-            'version' => $nextVersion,
+            'items'      => $this->encodeItems(),
+            'version'    => $nextVersion,
             'expires_at' => $this->expiresAt(),
             'updated_at' => CarbonImmutable::now(),
         ];
@@ -188,8 +200,43 @@ class LaravelDatabase implements StorageInterface
         return true;
     }
 
-    private function loadOrCreateCart(): void
+    private function insertCart(): bool
     {
+        $now = CarbonImmutable::now();
+        $inserted = $this->connection->table($this->table)->insertOrIgnore([
+            'identifier' => $this->id,
+            'user_id'    => $this->resolveUserIdentifier(),
+            'items'      => $this->encodeItems(),
+            'version'    => $this->version,
+            'expires_at' => $this->expiresAt(),
+            'created_at' => $now,
+            'updated_at' => $now,
+        ]);
+
+        if ($inserted !== 1) {
+            return false;
+        }
+
+        $row = $this->connection
+            ->table($this->table)
+            ->where('identifier', $this->id)
+            ->first(['id', 'version']);
+
+        if ($row === null) {
+            throw new RuntimeException("Unable to load newly created cart [{$this->id}].");
+        }
+
+        $this->setRowIdentity($row);
+
+        return true;
+    }
+
+    private function loadCart(): void
+    {
+        $this->cartId = null;
+        $this->version = 1;
+        $this->cart = [];
+
         $row = $this->connection
             ->table($this->table)
             ->where('identifier', $this->id)
@@ -201,59 +248,54 @@ class LaravelDatabase implements StorageInterface
             // a shared device). Rotate to a fresh identifier instead of
             // exposing or overwriting the other user's cart.
             $this->id = $this->rotateIdentifier();
-            $this->loadOrCreateCart();
+            $this->loadCart();
 
             return;
         }
 
         if ($row === null) {
-            $now = CarbonImmutable::now();
-
-            $this->connection->table($this->table)->insertOrIgnore([
-                'identifier' => $this->id,
-                'user_id' => $this->resolveUserIdentifier(),
-                'items' => '[]',
-                'version' => 1,
-                'expires_at' => $this->expiresAt(),
-                'created_at' => $now,
-                'updated_at' => $now,
-            ]);
-
-            $row = $this->connection
-                ->table($this->table)
-                ->where('identifier', $this->id)
-                ->first();
+            return;
         }
 
-        if ($row === null) {
-            throw new RuntimeException("Unable to load or create cart [{$this->id}].");
-        }
+        $this->setRowIdentity($row);
+        $this->cart = $this->hydrateItems($row->items);
 
-        if (! is_numeric($row->id) || ! is_numeric($row->version)) {
+        $this->touchMetadata($row->expires_at ?? null, $row->user_id ?? null);
+    }
+
+    private function setRowIdentity(object $row): void
+    {
+        if (! isset($row->id, $row->version) || ! is_numeric($row->id) || ! is_numeric($row->version)) {
             throw new UnexpectedValueException('The stored cart id and version must be numeric.');
         }
 
         $this->cartId = (int) $row->id;
         $this->version = (int) $row->version;
-        $this->cart = $this->hydrateItems($row->items);
-
-        $this->touchMetadata($row->expires_at ?? null);
     }
 
-    private function touchMetadata(mixed $expiresAt): void
+    private function touchMetadata(mixed $expiresAt, mixed $rowUserId): void
     {
-        if ($this->cartId === null || ! $this->needsRefresh($expiresAt)) {
+        if ($this->cartId === null) {
             return;
         }
 
-        $attributes = [
-            'expires_at' => $this->expiresAt(),
-            'updated_at' => CarbonImmutable::now(),
-        ];
+        $attributes = [];
+
+        if ($this->needsRefresh($expiresAt)) {
+            $attributes['expires_at'] = $this->expiresAt();
+        }
 
         if (($userIdentifier = $this->resolveUserIdentifier()) !== null) {
-            $attributes['user_id'] = $userIdentifier;
+            if (! is_string($rowUserId) && ! is_int($rowUserId)) {
+                $attributes['user_id'] = $userIdentifier;
+            }
         }
+
+        if ($attributes === []) {
+            return;
+        }
+
+        $attributes['updated_at'] = CarbonImmutable::now();
 
         $this->connection
             ->table($this->table)
